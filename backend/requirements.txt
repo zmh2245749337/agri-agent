@@ -1,0 +1,12 @@
+openai
+python-dotenv
+jieba
+rank_bm25
+sentence-transformers
+numpy
+requests
+rapidfuzz
+mcp
+fastapi
+uvicorn[standard]
+pydantic

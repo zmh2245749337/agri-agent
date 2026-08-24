@@ -1,0 +1,7 @@
+# frontend/requirements.txt
+# 之前项目里一直没有单独给frontend锁依赖版本（streamlit是手动装的，版本没记录），
+# 这次用到了st.chat_input的accept_file参数（原生"聊天框里带附件图标"，2025年初的版本
+# 才支持），补一个下限版本号，避免拿旧版本streamlit运行时因为不认识accept_file这个
+# 参数直接报错，也让"怎么复现这个项目"这件事更完整（不止后端，前端依赖也该锁版本）
+streamlit>=1.41
+requests
