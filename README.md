@@ -17,6 +17,7 @@
 - **MCP协议双向实践**：`WeatherAgent`是MCP的消费方（调用高德天气MCP Server），`mcp_server.py`反过来把诊断/天气/政策三个工具暴露成MCP Server，让别的MCP客户端也能调用——同一个项目里同时实践了协议的两端。
 - **`PlanningAgent`三个子Agent并发执行**：诊断/天气/政策之间没有数据依赖，用线程池并发替代顺序调用，总耗时从三段相加降到约等于最慢的一段，有专门的耗时断言测试证明并发确实生效（不是只改了代码但实际还是顺序执行）。
 - **工具调用轨迹可见**：Streamlit前端有一个默认收起的折叠面板，能直接看到`ChatAgent`这一轮实际调用了哪些工具、传了什么参数、拿到了什么原始结果，不只是看到最终的文字回答。
+- **同一个Function Calling循环，手写版 vs LangGraph版对比实现**：`chat_agent_langgraph.py`用业界主流的LangGraph框架把`ChatAgent`的reason-act-observe循环重新实现了一遍，业务话术（SYSTEM_PROMPT等）直接从`chat_agent.py`导入复用，差异只发生在"循环怎么跑起来"这一层——用来对比"框架帮你做了什么、自己还剩下什么要做"（比如MemorySaver接管了记忆存取，但不会自动帮你做历史裁剪）。是一份对比学习用的旁支实现，不接入线上服务，也不影响`ChatAgent`本身。
 
 ## 架构
 
@@ -92,7 +93,7 @@ agri-agent/
 ├── backend/
 │   ├── src/agri_agent/
 │   │   ├── core/          # MyLLM（LLM封装+重试）、MyAgent（最小Agent基类）、a2a_lite（A2A-lite调度层）
-│   │   ├── agents/         # ChatAgent、PlanningAgent、及三个子Agent
+│   │   ├── agents/         # ChatAgent（+其LangGraph对比实现）、PlanningAgent、及三个子Agent
 │   │   ├── tools/          # 诊断（两条路线）/政策检索/联网搜索工具
 │   │   ├── api/             # FastAPI路由
 │   │   ├── models/         # Pydantic请求/响应模型
@@ -100,7 +101,8 @@ agri-agent/
 │   ├── data/                 # 病虫害知识库（77条）、政策知识库（28条），JSON格式
 │   ├── eval/                 # 诊断检索方法量化对比实验（见下方"实验"部分）
 │   ├── tests/                # 自动化测试（见下方"测试"部分）
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── requirements-langgraph.txt   # LangGraph对比实现的可选依赖，单独装
 ├── frontend/
 │   ├── app.py
 │   └── requirements.txt
@@ -168,6 +170,24 @@ mcp dev backend/src/agri_agent/mcp_server.py
 
 会打开一个交互式Inspector页面，可以直接点开每个工具、填参数、看返回结果。
 
+### 6.（可选）跑一下ChatAgent的LangGraph对比版本
+
+`backend/src/agri_agent/agents/chat_agent_langgraph.py`是用[LangGraph](https://langchain-ai.github.io/langgraph/)把`ChatAgent`的reason-act-observe循环重新实现的一份旁支版本，不接入线上服务，只用来对比"业界主流框架帮你做了什么、自己还剩下什么要做"。
+
+**务必用独立虚拟环境装它的依赖，不要装进主项目平时用的环境**——`langchain-openai`会把环境里的`openai`包静默升级到一个不兼容旧代码的大版本，如果同一个环境里还跑着别的、依赖旧版`openai`的项目（甚至可能影响本项目自己的`MyLLM`），会被搞坏。踩过这个坑的完整过程记在开发笔记第二十节。正确装法：
+
+```bash
+cd backend
+python -m venv .venv-langgraph
+.venv-langgraph\Scripts\activate      # Windows；Linux/Mac用 source .venv-langgraph/bin/activate
+pip install -r requirements.txt
+pip install -r requirements-langgraph.txt
+cd src
+python -m agri_agent.agents.chat_agent_langgraph
+```
+
+会跑一段内置的两轮对话演示（第二轮会引用第一轮提到的信息，验证`MemorySaver`确实接上了记忆）。这份实现和`ChatAgent`共用同一份`SYSTEM_PROMPT`等业务话术（直接从`chat_agent.py`导入，不是复制粘贴），差异只发生在"循环怎么跑起来"这一层，详细的设计对比见开发笔记。用完`deactivate`退出这个虚拟环境即可，不影响你平时的开发环境。
+
 ## 测试
 
 ```bash
@@ -180,9 +200,10 @@ python tests/test_myllm_retry.py                    # MyLLM限流自动重试逻
 python tests/test_long_context_diagnosis_tool.py    # 长上下文诊断的JSON解析容错、越界过滤、异常兜底
 python tests/test_pest_knowledge_tool.py            # 诊断模块模糊匹配的真实行为（含已知边界的回归测试）
 python tests/test_policy_match_tool.py              # 政策模块两阶段检索的真实行为（含地区硬过滤回归测试）
+python tests/test_chat_agent_langgraph.py           # ChatAgent的LangGraph对比实现：图路由/记忆/SystemMessage去重（需额外装requirements-langgraph.txt）
 ```
 
-前六个只依赖轻量库（或者用假LLM对象做依赖注入，不需要真实网络），跑得很快；最后两个直接用真实的RapidFuzz/BM25/BGE模型（不mock），`test_policy_match_tool.py`第一次运行会从HuggingFace下载BGE模型（几百MB），需要联网，也会慢一些，属于正常现象。
+前六个只依赖轻量库（或者用假LLM对象做依赖注入，不需要真实网络），跑得很快；接下来两个直接用真实的RapidFuzz/BM25/BGE模型（不mock），`test_policy_match_tool.py`第一次运行会从HuggingFace下载BGE模型（几百MB），需要联网，也会慢一些，属于正常现象。最后一个（LangGraph版）需要额外`pip install -r requirements-langgraph.txt`，用假LLM对象注入，同样不需要真实网络。
 
 ## 实验：诊断模块检索方法量化对比
 
@@ -203,9 +224,11 @@ python eval/diagnosis_retrieval_eval.py
 - A2A-lite（`core/a2a_lite.py`）只借鉴了A2A协议的核心设计理念（Agent Card、统一消息信封、Task状态机），传输层仍然是进程内函数调用，不是真正的JSON-RPC/HTTP协议栈——这是刻意的取舍，不是没做完，具体理由见模块顶部注释。
 - 病虫害知识库目前77条、政策知识库28条，覆盖的是常见作物和主要省份，不是穷尽性覆盖；两个模块都有"本地查不到就兜底"的设计（诊断兜底用大模型通用知识、政策兜底联网搜索），但兜底结果的可信度低于本地人工核实过的数据，代码里会明确标注。
 - 图片上传目前只处理一张，多图场景还没做。
+- `chat_agent_langgraph.py`（LangGraph对比实现）没有实现`ChatAgent._trim_history()`对应的历史裁剪逻辑——`MemorySaver`只负责把每轮消息存下来、下一轮取出来续上，不会像`ChatAgent`那样在超过`MAX_HISTORY_TURNS`时自动截断，也没有`MAX_TOOL_ROUNDS`等价的工具调用轮数上限。这是刻意暴露出来的"框架帮你做了什么、不帮你做什么"的对比点，不是遗漏；真要接线上服务，这两块自己实现的兜底逻辑还是免不了要补。
 
 ## Roadmap
 
 - [ ] 对话流式输出（打字机效果）
 - [ ] 把`PlanningAgent`自己的Task执行轨迹接入前端可视化（跟`ChatAgent`的工具调用轨迹面板同一个思路，`a2a_lite.py`的数据结构已经留好了口子）
 - [ ] 如果长上下文对比实验证明诊断准确率提升明显，考虑给它加缓存/限流，控制多调用一次大模型带来的成本
+- [ ] 如果`chat_agent_langgraph.py`要往正式使用的方向发展，需要补上历史裁剪和工具调用轮数上限（目前只是对比学习用的旁支实现，不接入线上服务）
