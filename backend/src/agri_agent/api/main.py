@@ -1,5 +1,6 @@
 # backend/src/agri_agent/api/main.py
 import sys
+import uuid
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
@@ -11,9 +12,9 @@ load_dotenv()
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+from agri_agent.agents.agri_graph import AgriGraphAgent
 from agri_agent.core.my_llm import MyLLM
 from agri_agent.agents.planning_agent import PlanningAgent
-from agri_agent.agents.chat_agent import ChatAgent
 from agri_agent.models.schemas import (
     DiagnosisRequest,
     DiagnosisResponse,
@@ -49,12 +50,12 @@ _planning_agent = PlanningAgent(llm=_llm)
 _diagnosis_agent = _planning_agent.diagnosis_agent
 _weather_agent = _planning_agent.weather_agent
 _policy_agent = _planning_agent.policy_agent
-_chat_agent = ChatAgent(llm=_llm)  # 固定流水线（PlanningAgent）和Function Calling（ChatAgent）两套并存，共享同一个llm连接
+_chat_agent = AgriGraphAgent(planning_agent=_planning_agent)
 
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "agent": "agri_graph"}
 
 
 @app.post("/diagnosis", response_model=DiagnosisResponse)
@@ -93,12 +94,17 @@ def planning(req: PlanningRequest):
     # "某个子Agent失败"的情况，这里的try/except兜底的是"三个子Agent全部失败/
     # 传参有问题"这类更外层的异常
     try:
-        result = _planning_agent.run(
-            crop=req.crop,
-            city=req.city,
-            region=req.region,
-            symptom_text=req.symptom_text,
-            need=req.need,
+        result = _chat_agent.run(
+            "请根据已填写的信息生成一份完整农事行动计划。",
+            thread_id=uuid.uuid4().hex,
+            mode="planning",
+            context={
+                "crop": req.crop,
+                "city": req.city,
+                "region": req.region,
+                "symptom": req.symptom_text,
+                "need": req.need,
+            },
         )
         return PlanningResponse(result=result)
     except Exception as e:
@@ -107,12 +113,33 @@ def planning(req: PlanningRequest):
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
-    # ChatAgent.run()内部已经有try/except兜底（大模型调用持续失败时返回友好提示，
-    # 不会抛异常），这里的try/except兜底的是更外层的意外情况（比如前端传来的
-    # history格式有问题导致的异常）
+    # AgriGraphAgent.run()负责图内降级，这里兜底前端历史格式等更外层异常。
     try:
-        result, history = _chat_agent.run(req.message, history=req.history, image_data_url=req.image_data_url)
-        return ChatResponse(result=result, history=history)
+        thread_id = req.thread_id or uuid.uuid4().hex
+        context = req.context.model_dump(exclude_none=True) if req.context else None
+        result = _chat_agent.run(
+            req.message,
+            thread_id=thread_id,
+            image_data_url=req.image_data_url,
+            mode=req.mode,
+            context=context,
+            history=req.history,
+        )
+        history = _chat_agent.get_history(thread_id)
+        snapshot = _chat_agent.get_snapshot(thread_id)
+
+        return ChatResponse(
+            result=result,
+            history=history,
+            thread_id=thread_id,
+            route=snapshot.get("route"),
+            capabilities=snapshot.get("capabilities", []),
+            context=snapshot.get("context", {}),
+            missing_fields=snapshot.get("missing_fields", []),
+            confidence=snapshot.get("confidence"),
+            task_status=snapshot.get("task_status", {}),
+            pending_slot=snapshot.get("pending_slot"),
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

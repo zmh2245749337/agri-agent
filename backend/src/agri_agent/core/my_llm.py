@@ -33,8 +33,7 @@ class MyLLM:
         self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
 
     def _create_with_retry(self, **kwargs):
-        """封装限流重试逻辑的底层调用，invoke()和chat_with_tools()共用一份重试逻辑，
-        不用在两个方法里各写一遍。只对RateLimitError重试，其他异常直接抛出去"""
+        """封装限流重试逻辑的底层调用，只对RateLimitError重试。"""
         timeout = kwargs.pop("timeout", self.timeout)
 
         last_error = None
@@ -62,19 +61,3 @@ class MyLLM:
             **kwargs,
         )
         return response.choices[0].message.content
-
-    def chat_with_tools(self, messages: list, tools: list, tool_choice="auto", **kwargs):
-        """支持Function Calling的调用。和invoke()的关键区别：
-        返回的是完整的message对象，不是只返回文本——因为调用方（ChatAgent）需要检查
-        message.tool_calls来判断模型这一轮是"要求调用工具"还是"已经给出最终答案"，
-        只返回纯文本的话这个信息就丢了。给新的ChatAgent（Function Calling循环）用"""
-        temperature = kwargs.pop("temperature", self.temperature)
-        response = self._create_with_retry(
-            model=self.model,
-            messages=messages,
-            temperature=temperature,
-            tools=tools,
-            tool_choice=tool_choice,
-            **kwargs,
-        )
-        return response.choices[0].message

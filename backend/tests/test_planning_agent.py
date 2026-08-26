@@ -207,6 +207,31 @@ def test_last_tasks_marks_failed_subagent_with_error_message():
     print("测试通过：某个子Agent失败时，对应Task状态记录为failed且带错误信息，不影响其它Task")
 
 
+def test_explicit_capabilities_only_run_requested_subagents():
+    calls = []
+    agent = _make_agent_with_fakes(
+        diagnosis_run=lambda crop, symptom: calls.append("diagnosis") or "诊断建议内容",
+        weather_run=lambda city: calls.append("weather") or "天气建议内容",
+        policy_run=lambda crop, region, need: calls.append("policy") or "不应该被调用",
+        final_run=lambda prompt: prompt,
+    )
+
+    result = agent.run(
+        crop="水稻",
+        city="长沙",
+        symptom_text="叶片发黄",
+        capabilities=["diagnosis", "weather"],
+    )
+
+    assert set(calls) == {"diagnosis", "weather"}
+    assert "policy" not in calls
+    assert set(agent.last_tasks) == {"diagnosis", "weather"}
+    assert "诊断建议内容" in result and "天气建议内容" in result
+    assert "严禁创建空章节" in result
+    assert '分成"近期要做的事"和"可以了解的政策/资源"两部分' not in result
+    print("测试通过：显式capabilities只执行本轮需要的专业模块，不会无条件查询政策")
+
+
 if __name__ == "__main__":
     test_all_succeed_combines_three_sections()
     test_skips_diagnosis_when_no_symptom_text()
@@ -216,4 +241,5 @@ if __name__ == "__main__":
     test_section_order_stays_fixed_regardless_of_completion_order()
     test_last_tasks_records_task_status_for_each_subagent()
     test_last_tasks_marks_failed_subagent_with_error_message()
+    test_explicit_capabilities_only_run_requested_subagents()
     print("\n全部测试通过")

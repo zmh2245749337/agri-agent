@@ -1,4 +1,7 @@
 openai
+langgraph
+langchain-core
+langchain-openai
 python-dotenv
 jieba
 rank_bm25

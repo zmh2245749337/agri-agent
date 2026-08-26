@@ -69,7 +69,25 @@ class PlanningAgent:
         # 数据留出来，本轮不接前端）
         self.last_tasks = {}
 
-    def run(self, crop: str, city: str, region: str, symptom_text: str = None, need: str = "种植补贴") -> str:
+    def run(
+        self,
+        crop: str = None,
+        city: str = None,
+        region: str = None,
+        symptom_text: str = None,
+        need: str = "种植补贴",
+        capabilities: list[str] = None,
+    ) -> str:
+        # 老的结构化/planning入口不传capabilities时，保持原行为：有症状就诊断，
+        # 同时查询天气和政策。统一AgriGraph会显式传入本轮需要的能力，避免为了
+        # "规划"这个名字无条件调用用户没有询问的模块。
+        if capabilities is None:
+            selected = {"weather", "policy"}
+            if symptom_text:
+                selected.add("diagnosis")
+        else:
+            selected = set(capabilities) & {"diagnosis", "weather", "policy"}
+
         # ---------- 第一步～第三步：诊断/天气/政策 三个子Agent并发执行 ----------
         # 这三步互相之间没有数据依赖（谁都不需要等另一个的结果才能开始），之前是顺序
         # 调用，总耗时=三段耗时相加；三个子Agent内部主要都是网络I/O等待（调大模型、
@@ -88,25 +106,27 @@ class PlanningAgent:
             # dispatch_task——传入这个子Agent的AgentCard，以及一个提前绑定好
             # 真实参数的无参lambda（dispatch_task本身不关心每个子Agent的方法
             # 签名长什么样，只负责跑它、记录Task状态）
-            if symptom_text:
+            if "diagnosis" in selected and symptom_text:
                 futures["diagnosis"] = executor.submit(
                     dispatch_task,
                     self.DIAGNOSIS_CARD,
                     lambda: self.diagnosis_agent.run(crop, symptom_text),
                     f"作物={crop}；症状={symptom_text}",
                 )
-            futures["weather"] = executor.submit(
-                dispatch_task,
-                self.WEATHER_CARD,
-                lambda: self.weather_agent.run(city),
-                f"城市={city}",
-            )
-            futures["policy"] = executor.submit(
-                dispatch_task,
-                self.POLICY_CARD,
-                lambda: self.policy_agent.run(crop, region, need),
-                f"作物={crop}；地区={region}；需求={need}",
-            )
+            if "weather" in selected and city:
+                futures["weather"] = executor.submit(
+                    dispatch_task,
+                    self.WEATHER_CARD,
+                    lambda: self.weather_agent.run(city),
+                    f"城市={city}",
+                )
+            if "policy" in selected and crop and region:
+                futures["policy"] = executor.submit(
+                    dispatch_task,
+                    self.POLICY_CARD,
+                    lambda: self.policy_agent.run(crop, region, need),
+                    f"作物={crop}；地区={region}；需求={need}",
+                )
 
             # dispatch_task内部已经把所有异常都catch住、记录成Task.status="failed"了，
             # 不会有异常从future.result()里再抛出来——这里不需要额外再包一层
@@ -116,7 +136,7 @@ class PlanningAgent:
 
         self.last_tasks = tasks
         elapsed = time.time() - start_time
-        print(f"[PlanningAgent] 三个子模块并发执行完成，耗时{elapsed:.1f}秒")
+        print(f"[PlanningAgent] {len(tasks)}个子模块并发执行完成，耗时{elapsed:.1f}秒")
 
         # ---------- 按固定顺序拼装结果（诊断→天气→政策），不受并发完成顺序影响 ----------
         # 三个线程谁先跑完是不确定的，但用户看到的报告结构应该是稳定、可预期的，
@@ -133,14 +153,14 @@ class PlanningAgent:
             sections.append(f"【政策补贴建议】\n{tasks['policy'].result_text}")
 
         if not sections:
-            return "很抱歉，本次三个模块都未能生成建议，请检查网络连接或稍后重试。"
+            return "很抱歉，本次没有子模块生成有效建议，请补充必要信息、检查网络连接或稍后重试。"
 
         # ---------- 第四步：整合成一份连贯的行动计划 ----------
         combined = "\n\n".join(sections)
-        prompt = f"""你是一个农事顾问。下面是针对作物"{crop}"，分别从诊断、天气、政策三个独立角度生成的建议，
-这三段建议是各自独立生成的，可能有一些重复或者角度分散。请你把它们整合成一份连贯、有优先级的行动计划，
-分成"近期要做的事"和"可以了解的政策/资源"两部分，用简洁清晰的语言呈现。不要逐字重复三段原文，
-也不要脱离这些内容编造新信息。如果某个模块的建议缺失（比如没有诊断建议），直接跳过那部分，不用提及缺失原因：
+        prompt = f"""你是一个农事顾问。下面是针对作物"{crop}"，由本轮实际需要的专业模块分别生成的建议，
+这些建议是各自独立生成的，可能有一些重复或者角度分散。请把它们整合成一份连贯、有优先级的行动建议，
+根据实际内容选择贴切的小标题，用简洁清晰的语言呈现。不要逐字重复原文，也不要脱离这些内容编造新信息。
+只展示本轮确实有结果的部分；严禁创建空章节，严禁输出“暂无内容”“本模块无相关建议”之类的占位文字：
 
 {combined}
 """

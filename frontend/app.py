@@ -1,6 +1,7 @@
 # frontend/app.py
 import base64
 import os
+import uuid
 
 import requests
 import streamlit as st
@@ -13,13 +14,13 @@ st.set_page_config(page_title="智慧农事助手 AgriAgent", page_icon="🌾", 
 st.title("🌾 智慧农事助手 AgriAgent")
 st.caption("作物诊断 · 天气建议 · 政策补贴 · 一站式农事行动计划")
 
-# 图片描述文字拼进用户消息时用的两个标记前缀（要跟chat_agent.py里拼接的文案完全一致），
+# 图片描述文字拼进用户消息时用的两个标记前缀（要跟agri_graph.py里的文案完全一致），
 # 用来在重新渲染历史记录时把这段"内部标记文字"切掉，只给用户看他自己原本打的那句话——
 # 这段标记是喂给大模型看的上下文，不是说给用户听的
 _IMAGE_DESC_MARKER = "\n\n[图片识别到的症状描述："
 _IMAGE_FAIL_MARKER = "\n\n[用户上传了一张图片，但图片识别失败"
 
-# 工具调用轨迹面板用的中文友好标签——ChatAgent返回的history里其实完整记录了
+# 工具调用轨迹面板用的中文友好标签——AgriGraph返回的history里完整记录了
 # 每一轮的tool_calls和tool结果（工具名、参数、返回的原始数据），之前只是渲染时
 # 把这些过滤掉了、只显示最终的文字回答。这里把它们重新展示出来（放进一个默认收起的
 # 折叠面板里，不打扰正常对话阅读），能让人直接看到"模型这一轮到底调用了哪些工具、
@@ -29,6 +30,18 @@ _TOOL_LABELS = {
     "get_weather_forecast": "☀️ 查询天气预报",
     "search_subsidy_policy": "📋 查询本地政策库",
     "web_search_policy": "🌐 联网搜索政策",
+}
+
+_CONTEXT_LABELS = {
+    "crop": "作物",
+    "city": "城市",
+    "region": "地区",
+    "symptom": "症状",
+    "need": "需求",
+    "growth_stage": "种植阶段",
+    "has_symptom": "是否有症状",
+    "active_goal": "当前目标",
+    "pending_slot": "待确认",
 }
 
 
@@ -70,19 +83,21 @@ def call_backend(path: str, payload: dict, timeout: int = 120) -> dict:
         return {"result": f"⚠️ 后端返回错误：{e}"}
 
 
-# ========== 自由对话（Function Calling）现在是默认落地页 ==========
-# 之前用st.radio在"结构化表单"和"自由对话"之间切换，两个入口平级、默认停在表单页。
-# 但结构化表单需要用户先想清楚crop/city/region这些字段才能用，对第一次打开页面的人不友好；
-# 自由对话不需要任何预先信息、随便问一句就能开始，更适合做默认体验。
-# 表单不是删掉，是收进下面侧边栏的一个折叠面板里，需要"一次性生成完整计划"这种更结构化的
-# 场景时还能用，只是不再和聊天平级展示
-st.caption("随便问点什么，比如“我在长沙种水稻，最近适合打药吗”——模型会自己判断该查天气、查诊断知识库还是查补贴政策，也能接着上一句继续问，还可以上传一张作物照片让它帮你看症状。")
+# ========== 聊天是唯一用户入口 ==========
+# 作物、地区、症状等结构化字段都由AgriGraph从自然语言中提取；信息不足时，
+# 助手会在对话里追问并把答案保存到当前会话，不再要求用户填写独立表单。
+st.caption("直接说出你的问题，比如“我在长沙种水稻，最近适合打药吗”。信息不够时助手会接着询问，也可以附一张作物照片。")
 
 if "chat_history" not in st.session_state:
-    # 存的是ChatAgent.run()返回的messages列表格式（不含system prompt），
+    # 存的是AgriGraphAgent返回的messages列表格式（不含system prompt），
     # 每轮对话结束后原样存回session_state，下一轮调用时原样传给后端——
     # 这份"记忆"只存在于这一次浏览器会话里，刷新页面/关掉标签页就没了
     st.session_state.chat_history = []
+if "chat_thread_id" not in st.session_state:
+    # AgriGraph用thread_id在MemorySaver中隔离并续接会话。
+    st.session_state.chat_thread_id = uuid.uuid4().hex
+if "chat_context" not in st.session_state:
+    st.session_state.chat_context = {}
 if "chat_image_map" not in st.session_state:
     # 图片是前端本地的展示需求，后端history里只有文字（图片已经被视觉模型翻译成文字了，
     # 原始图片数据没必要也不应该跟着对话历史来回传）。所以单独在前端维护一个
@@ -91,11 +106,25 @@ if "chat_image_map" not in st.session_state:
     # 下标会跟着变，但每条消息的文本内容不会变
     st.session_state.chat_image_map = {}
 
+if st.session_state.chat_context:
+    confirmed = []
+    for key, value in st.session_state.chat_context.items():
+        if value is None or value == "":
+            continue
+        if key == "has_symptom":
+            value = "有" if value else "无"
+        elif key == "pending_slot":
+            value = _CONTEXT_LABELS.get(value, value)
+        confirmed.append(f"{_CONTEXT_LABELS.get(key, key)}：{value}")
+    if confirmed:
+        st.caption("已确认信息 · " + " | ".join(confirmed))
+
 if st.button("🗑️ 清空对话", key="btn_clear_chat"):
     st.session_state.chat_history = []
     st.session_state.chat_image_map = {}
+    st.session_state.chat_thread_id = uuid.uuid4().hex
+    st.session_state.chat_context = {}
     st.rerun()
-
 # role=user和role=assistant(有content)的消息渲染成聊天气泡；role=assistant但
 # content为空（那是"我要调用工具"的中间消息）、role=tool（工具执行结果）不再是
 # 直接跳过不展示——而是先攒起来，等遇到这一轮真正的最终回答时，在它上方放一个默认
@@ -175,11 +204,20 @@ if prompt and (prompt.text or prompt.files):
     with st.spinner(spinner_text):
         resp = call_backend(
             "/chat",
-            {"message": user_input, "history": old_history, "image_data_url": image_data_url},
+            {
+                "message": user_input,
+                "history": old_history,
+                "image_data_url": image_data_url,
+                "thread_id": st.session_state.chat_thread_id,
+                "mode": "auto",
+                "context": st.session_state.chat_context,
+            },
             timeout=120,
         )
 
     new_history = resp.get("history", old_history)
+    st.session_state.chat_thread_id = resp.get("thread_id") or st.session_state.chat_thread_id
+    st.session_state.chat_context = resp.get("context") or st.session_state.chat_context
     if image_bytes and len(new_history) > len(old_history):
         # 新增的第一条消息就是这一轮后端实际存进history的user消息（内容 = 用户原话 +
         # 视觉模型拼接的症状描述标记），用它的完整文本当key存图，保证后面重新渲染这条
@@ -193,58 +231,3 @@ if prompt and (prompt.text or prompt.files):
         st.markdown(resp["result"])
 
     st.rerun()
-
-# ========== 结构化表单（固定流水线）收进侧边栏折叠面板，默认收起 ==========
-# 固定流水线 CropDiagnosis → Weather → Policy → Planning 依然保留，适合"信息已经想清楚，
-# 要一份结构化完整计划"的场景，跟上面的自由对话是两种并存的Agent设计范式，
-# 不是谁取代谁——只是不再默认展示，收进侧边栏，需要的时候自己点开
-with st.sidebar:
-    with st.expander("📋 结构化表单（固定流程，可选）", expanded=False):
-        st.caption("按crop/city/region等字段一次性生成完整农事行动计划，代码写死调用顺序（诊断→天气→政策→整合）")
-        crop = st.text_input("作物", value="水稻")
-        city = st.text_input("城市（查天气用）", value="长沙", help="高德天气查询用，填城市级别的地名")
-        region = st.text_input("省级行政区（查政策用）", value="湖南省", help="政策库匹配用，填省级行政区")
-        symptom_text = st.text_area("症状描述（可选）", value="", help="不填就跳过作物诊断这一步")
-        need = st.text_input("政策需求", value="种植补贴")
-        submit = st.button("🌾 生成完整农事行动计划", type="primary", use_container_width=True)
-
-        if submit:
-            with st.spinner("正在生成行动计划（依次调用诊断/天气/政策三个模块，再整合成一份计划，可能需要十几秒到一分钟）..."):
-                resp = call_backend(
-                    "/planning",
-                    {
-                        "crop": crop,
-                        "city": city,
-                        "region": region,
-                        "symptom_text": symptom_text or None,
-                        "need": need,
-                    },
-                    timeout=180,
-                )
-            st.markdown(resp["result"])
-
-        st.divider()
-        st.caption("也可以只单独看某一项建议：")
-
-        tab1, tab2, tab3 = st.tabs(["🩺 诊断", "☀️ 天气", "📋 政策"])
-
-        with tab1:
-            if st.button("生成诊断建议", key="btn_diagnosis"):
-                if not symptom_text:
-                    st.warning("请先在上面填写症状描述")
-                else:
-                    with st.spinner("生成中..."):
-                        resp = call_backend("/diagnosis", {"crop": crop, "symptom_text": symptom_text})
-                    st.markdown(resp["result"])
-
-        with tab2:
-            if st.button("生成天气建议", key="btn_weather"):
-                with st.spinner("生成中..."):
-                    resp = call_backend("/weather", {"city": city})
-                st.markdown(resp["result"])
-
-        with tab3:
-            if st.button("生成政策建议", key="btn_policy"):
-                with st.spinner("生成中（本地检索优先，查不到会自动联网搜索兜底）..."):
-                    resp = call_backend("/policy", {"crop": crop, "region": region, "need": need})
-                st.markdown(resp["result"])

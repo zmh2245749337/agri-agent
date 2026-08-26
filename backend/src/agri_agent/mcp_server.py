@@ -9,8 +9,8 @@
 MCP协议的两端，比只做过其中一端的故事更完整。
 
 暴露的是三个原始工具函数（match_pest_knowledge/query_weather/match_policy），
-不是包了一层大模型总结的CropDiagnosisAgent.run()这些方法——原因和ChatAgent的
-TOOLS设计是同一个道理（见chat_agent.py顶部注释）：调用这个MCP Server的是另一个
+不是包了一层大模型总结的CropDiagnosisAgent.run()这些方法——原因和AgriGraph的
+工具注册表设计是同一个道理（见tools/agent_tools.py）：调用这个MCP Server的是另一个
 Agent/大模型，它自己会对拿到的结构化数据做推理和总结，如果这里已经先用大模型
 总结成一段自然语言，等于让别人的Agent再去理解、再加工一段"别的大模型已经生成好的
 文字"，多余且信息有损失（结构化数据里的原始字段，总结成文字后就丢掉了）。工具只吐

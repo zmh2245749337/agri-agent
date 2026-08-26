@@ -1,23 +1,5 @@
-# chat_agent_langgraph.py的可选依赖，单独放一份requirements，不merge进主
-# requirements.txt——LangGraph生态的依赖链比主服务重不少，只为了一份对比学习/
-# 面试谈资用的旁支实现，不应该让主服务也背上这些依赖。
-#
-# 【重要】务必装进独立的虚拟环境，不要直接pip install进你平时跑主项目
-# （甚至其它项目）用的那个环境！
-# 踩过的真坑：langchain-openai依赖较新版本的openai这个包，直接装的话pip会
-# 把你环境里已经装好的openai静默升级到一个大版本跳跃的新版本——如果这个
-# 环境里还装了别的、依赖旧版openai的项目（比如要求openai<2.0.0的项目），
-# 会直接把那个项目搞坏；即使没有别的项目，也可能影响本项目自己
-# `core/my_llm.py`里`from openai import OpenAI, RateLimitError`这行的行为，
-# 因为openai这个SDK不同大版本之间API不保证兼容。
-#
-# 正确装法（新建一个只给这份对比实现用的独立虚拟环境）：
-#   cd backend
-#   python -m venv .venv-langgraph
-#   .venv-langgraph\Scripts\activate      # Windows；Linux/Mac用 source .venv-langgraph/bin/activate
-#   pip install -r requirements.txt        # chat_agent_langgraph.py还import了本项目其它模块，主依赖也要装
-#   pip install -r requirements-langgraph.txt
-#   （用完 deactivate 退出，不影响你平时的环境）
+# 兼容旧的安装命令。LangGraph现在已经是统一AgriGraph主流程的正式依赖，
+# 下面三个包也同时列在requirements.txt中；新环境只安装requirements.txt即可。
 langgraph
 langchain-core
 langchain-openai
