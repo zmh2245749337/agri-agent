@@ -90,8 +90,8 @@ def policy(req: PolicyRequest):
 
 @app.post("/planning", response_model=PlanningResponse)
 def planning(req: PlanningRequest):
-    # PlanningAgent.run()内部走a2a_lite.dispatch_task的Task状态机已经处理了
-    # "某个子Agent失败"的情况，这里的try/except兜底的是"三个子Agent全部失败/
+    # PlanningAgent.run()内部已经把进程内任务与A2A远程任务统一成SubAgentTask，
+    # 并处理了单个子Agent失败和A2A不可用时的本地回退；这里兜底的是三个子Agent全部失败/
     # 传参有问题"这类更外层的异常
     try:
         result = _chat_agent.run(

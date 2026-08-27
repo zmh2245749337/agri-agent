@@ -1,4 +1,5 @@
 # src/agri_agent/agents/planning_agent.py
+import os
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -8,10 +9,10 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 
 from agri_agent.core.my_llm import MyLLM
 from agri_agent.core.my_agent import MyAgent
-from agri_agent.core.a2a_lite import AgentCard, dispatch_task
+from agri_agent.core.subagent_task import SubAgentTask, run_local_subagent
+from agri_agent.a2a.policy_client import PolicyA2AClient
 from agri_agent.agents.diagnosis_agent import CropDiagnosisAgent
 from agri_agent.agents.weather_agent import WeatherAgent
-from agri_agent.agents.policy_agent import PolicySubsidyAgent
 
 
 class PlanningAgent:
@@ -30,44 +31,53 @@ class PlanningAgent:
     PlanningAgent是"Agent的消费者"（拿其他Agent已经生成好的自然语言建议做二次整合），
     在整个项目的分层里，它站在比其他三个Agent更高一层。
 
-    调用三个子Agent这一步，走的是core/a2a_lite.py里借鉴A2A协议理念做的轻量
-    调度层（AgentCard声明能力 + dispatch_task产出有状态机的Task），而不是
-    直接裸调用子Agent的run()方法——之前的_safe_call（try/except+返回None）
-    在语义上被dispatch_task的Task状态机（completed/failed）取代了，效果
-    等价，但多了显式的任务生命周期记录，为以后可观测性/跨进程拆分留了口子
-    （具体设计理由见a2a_lite.py顶部注释）。
+    政策子Agent可以通过官方a2a-sdk作为独立服务运行：PlanningAgent先读取远程
+    Agent Card，再使用A2A JSON-RPC Message/Task协议委派任务并读取Artifact。
+    远程服务不可用时自动回退到进程内PolicySubsidyAgent，诊断和天气则继续使用
+    进程内并发，避免为展示协议而把所有模块过度服务化。
     """
 
-    # 三个子Agent各自的"能力名片"，对应A2A协议里Agent Card的简化版——
-    # PlanningAgent按这张名片分发任务，不需要在调用点重复写清楚每个子Agent
-    # 是干什么的，也方便以后要新增/替换子Agent时，改动集中在这一处
-    DIAGNOSIS_CARD = AgentCard(
-        name="作物诊断建议",
-        description="根据作物种类和症状描述，检索本地病虫害知识库并给出诊断建议",
-        skills=["病虫害诊断", "知识库模糊匹配"],
-    )
-    WEATHER_CARD = AgentCard(
-        name="天气建议",
-        description="查询目标城市天气预报，给出是否适合打药/灌溉/收割等农事建议",
-        skills=["天气查询", "MCP工具调用"],
-    )
-    POLICY_CARD = AgentCard(
-        name="政策补贴建议",
-        description="根据作物、地区、需求检索本地补贴政策库，本地查不到时联网搜索兜底",
-        skills=["政策检索", "两阶段RAG", "联网搜索兜底"],
-    )
+    def __init__(self, llm=None, policy_a2a_url: str | None = None, policy_a2a_client=None):
+        # PolicySubsidyAgent导入时会初始化BGE检索依赖；延迟到真正创建编排器时
+        # 再加载，协议层和纯编排单测无需为一个不会执行的本地回退加载向量模型。
+        from agri_agent.agents.policy_agent import PolicySubsidyAgent
 
-    def __init__(self, llm=None):
         self.llm = llm or MyLLM()
         self.agent = MyAgent("PlanningAgent", self.llm)
         # 三个子Agent共享同一个MyLLM实例，不用各自重新初始化一遍client连接
         self.diagnosis_agent = CropDiagnosisAgent(llm=self.llm)
         self.weather_agent = WeatherAgent(llm=self.llm)
         self.policy_agent = PolicySubsidyAgent(llm=self.llm)
-        # 记录最近一次run()里三个子Agent各自的Task对象，方便调试/以后做
-        # 可视化用（跟ChatAgent的工具调用轨迹面板是同一个思路，这里先把
-        # 数据留出来，本轮不接前端）
+        if policy_a2a_client is not None:
+            self.policy_a2a_client = policy_a2a_client
+        else:
+            remote_url = policy_a2a_url or os.getenv("POLICY_A2A_URL")
+            self.policy_a2a_client = PolicyA2AClient(remote_url) if remote_url else None
+        # 记录最近一次run()里三个子Agent的统一任务结果，其中policy.protocol
+        # 会明确标注local、A2A/JSONRPC或local-fallback，便于定位远程调用情况。
         self.last_tasks = {}
+
+    def _dispatch_policy_task(self, crop: str, region: str, need: str) -> SubAgentTask:
+        input_text = f"作物={crop}；地区={region}；需求={need}"
+        if self.policy_a2a_client is None:
+            return run_local_subagent(
+                "政策补贴建议",
+                lambda: self.policy_agent.run(crop, region, need),
+                input_text,
+            )
+
+        try:
+            return self.policy_a2a_client.run(crop, region, need)
+        except Exception as exc:
+            print(f"[PlanningAgent] A2A政策服务不可用，回退本地执行：{exc}")
+            task = run_local_subagent(
+                "政策补贴建议",
+                lambda: self.policy_agent.run(crop, region, need),
+                input_text,
+            )
+            task.protocol = "local-fallback"
+            task.fallback_reason = str(exc)
+            return task
 
     def run(
         self,
@@ -87,7 +97,6 @@ class PlanningAgent:
                 selected.add("diagnosis")
         else:
             selected = set(capabilities) & {"diagnosis", "weather", "policy"}
-
         # ---------- 第一步～第三步：诊断/天气/政策 三个子Agent并发执行 ----------
         # 这三步互相之间没有数据依赖（谁都不需要等另一个的结果才能开始），之前是顺序
         # 调用，总耗时=三段耗时相加；三个子Agent内部主要都是网络I/O等待（调大模型、
@@ -103,35 +112,32 @@ class PlanningAgent:
         with ThreadPoolExecutor(max_workers=3) as executor:
             # 没传症状描述就直接不提交这个任务，跟之前"跳过诊断步骤"是同一个效果，
             # 不会因为并发就多此一举地调用诊断Agent。每个future跑的都是
-            # dispatch_task——传入这个子Agent的AgentCard，以及一个提前绑定好
-            # 真实参数的无参lambda（dispatch_task本身不关心每个子Agent的方法
-            # 签名长什么样，只负责跑它、记录Task状态）
+            # run_local_subagent把进程内成功/失败转换成统一任务结果；政策分支则由
+            # _dispatch_policy_task决定走官方A2A远程服务还是本地回退。
             if "diagnosis" in selected and symptom_text:
                 futures["diagnosis"] = executor.submit(
-                    dispatch_task,
-                    self.DIAGNOSIS_CARD,
+                    run_local_subagent,
+                    "作物诊断建议",
                     lambda: self.diagnosis_agent.run(crop, symptom_text),
                     f"作物={crop}；症状={symptom_text}",
                 )
             if "weather" in selected and city:
                 futures["weather"] = executor.submit(
-                    dispatch_task,
-                    self.WEATHER_CARD,
+                    run_local_subagent,
+                    "天气建议",
                     lambda: self.weather_agent.run(city),
                     f"城市={city}",
                 )
             if "policy" in selected and crop and region:
                 futures["policy"] = executor.submit(
-                    dispatch_task,
-                    self.POLICY_CARD,
-                    lambda: self.policy_agent.run(crop, region, need),
-                    f"作物={crop}；地区={region}；需求={need}",
+                    self._dispatch_policy_task,
+                    crop,
+                    region,
+                    need,
                 )
 
-            # dispatch_task内部已经把所有异常都catch住、记录成Task.status="failed"了，
-            # 不会有异常从future.result()里再抛出来——这里不需要额外再包一层
-            # try/except，跟子Agent失败降级相关的保护逻辑完全没有因为并发/协议化
-            # 改造而减弱，只是"怎么表达失败"从裸的None变成了有状态的Task对象
+            # 三个入口都会把异常转换成SubAgentTask，不会有单个子Agent异常从
+            # future.result()继续向外扩散。
             tasks = {key: future.result() for key, future in futures.items()}
 
         self.last_tasks = tasks

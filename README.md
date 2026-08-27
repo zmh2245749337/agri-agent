@@ -14,7 +14,7 @@ AgriAgent 以聊天作为唯一用户入口：先用结构化输出识别执行�
 | Agent 范式 | LangGraph 混合工作流：结构化路由 + ReAct + Planning 分支 |
 | 政策检索 | BM25 粗筛 → 地区硬过滤 → BGE 语义精排 → 规则加权解释 |
 | 病虫害诊断 | 77 条知识库，RapidFuzz 主路线 + 长上下文对照路线 |
-| 协作协议 | MCP 双向实践 + A2A-lite Agent Card / Task 状态机 |
+| 协作协议 | MCP 双向实践 + 官方 A2A 跨服务任务委派 |
 | 工程保障 | 429 重试、工具轮数上限、会话恢复、失败隔离、调用轨迹 |
 | 服务形态 | FastAPI 后端 + Streamlit 前端，HTTP 分离部署 |
 
@@ -31,7 +31,7 @@ AgriAgent 以聊天作为唯一用户入口：先用结构化输出识别执行�
 - **单一 Agent 主线**：运行代码只保留 [`AgriGraphAgent`](backend/src/agri_agent/agents/agri_graph.py)。Function Calling 的工具 schema 集中在 [`agent_tools.py`](backend/src/agri_agent/tools/agent_tools.py)，历史版本的实现取舍保留在开发笔记，不再让生产目录承担多版本对照。
 - **检索方案与数据规模匹配**：政策库使用 BM25 + BGE 两阶段检索并提供匹配理由；77 条病虫害知识库没有强行引入向量数据库或 GraphRAG，而是用低成本 RapidFuzz 与长上下文路线做量化对照。
 - **有实验结果，不只展示 Demo**：16 条人工标注用例中，RapidFuzz 命中率为 69%、平均耗时 0.1ms；长上下文路线命中率为 81%、平均耗时 1058.6ms，但在 2 条“作物不匹配”用例上均未正确拒绝。结果支持“规则主查、长上下文兜底复核”，而不是简单替换。
-- **协议、可靠性和可观测性形成闭环**：消费高德天气 MCP，也把自身工具暴露为 MCP Server；A2A-lite 记录子 Agent 任务生命周期；前端可查看工具参数与原始结果；网络失败或单个子 Agent 异常时返回可用的部分结果。
+- **协议、可靠性和可观测性形成闭环**：消费高德天气 MCP，也把自身工具暴露为 MCP Server；基于官方 A2A SDK 将政策 Agent 独立服务化，支持 Agent Card 发现、JSON-RPC 任务委派与本地回退；前端可查看工具参数与原始结果。
 
 更完整的设计依据、被放弃的方案和生产化边界见 [技术决策记录](docs/technical-decisions.md)；真实多轮对话中发现的问题、修复证据和面试讲法见 [AgriGraph事故复盘](docs/agent-routing-incidents.md)。
 
@@ -54,12 +54,12 @@ graph TB
             PA["Planning Branch<br/>调用PlanningAgent按需并发"]
         end
 
-        A2A["a2a_lite.py<br/>Agent Card + Task状态机"]
+        A2AC["PolicyA2AClient<br/>Agent Card发现 + JSON-RPC"]
 
         subgraph SubAgents["子Agent（Tool的消费者）"]
             DA["CropDiagnosisAgent"]
             WA["WeatherAgent"]
-            POA["PolicySubsidyAgent"]
+            POA["PolicySubsidyAgent<br/>本地回退"]
         end
 
         subgraph Tools["原始工具（只吐结构化数据）"]
@@ -73,6 +73,13 @@ graph TB
         MCPS["mcp_server.py<br/>把T1/T2/T4反向暴露成MCP Server"]
     end
 
+    subgraph A2AS["独立A2A政策服务（:8011）"]
+        CARD["Agent Card"]
+        TASK["Message → Task → Artifact"]
+        RPOA["PolicySubsidyAgent"]
+        CARD --> TASK --> RPOA
+    end
+
     EXT["外部MCP客户端<br/>（Claude Desktop等）"]
 
     UI -->|HTTP| API
@@ -81,10 +88,11 @@ graph TB
     RT --> RA
     RT --> CL
     RT --> PA
-    PA -.dispatch_task.-> A2A
-    A2A --> DA
-    A2A --> WA
-    A2A --> POA
+    PA --> DA
+    PA --> WA
+    PA -.远程政策任务.-> A2AC
+    A2AC -.A2A JSON-RPC.-> CARD
+    PA -.服务不可用时回退.-> POA
     RA -.Function Calling.-> T1
     RA -.Function Calling.-> T2
     RA -.Function Calling.-> T3
@@ -93,7 +101,9 @@ graph TB
     T1 -."量化对比".-> T1B
     WA --> T4
     POA --> T2
+    RPOA --> T2
     POA -."本地查不到"再联网.-> T3
+    RPOA -."本地查不到"再联网.-> T3
     T1 -.暴露为MCP工具.-> MCPS
     T2 -.暴露为MCP工具.-> MCPS
     T4 -.暴露为MCP工具.-> MCPS
@@ -102,7 +112,7 @@ graph TB
 
 ## 技术栈
 
-**后端**：Python、FastAPI、Pydantic、LangGraph、LangChain Core、OpenAI SDK（对接智谱GLM兼容接口）、MCP、RapidFuzz、jieba、rank-bm25、sentence-transformers（BGE-small-zh-v1.5）、numpy
+**后端**：Python、FastAPI、Pydantic、LangGraph、LangChain Core、OpenAI SDK（对接智谱GLM兼容接口）、官方A2A Python SDK（Agent Card、JSON-RPC、Message/Task/Artifact）、MCP、RapidFuzz、jieba、rank-bm25、sentence-transformers（BGE-small-zh-v1.5）、numpy
 
 **前端**：Streamlit
 
@@ -114,7 +124,8 @@ graph TB
 agri-agent/
 ├── backend/
 │   ├── src/agri_agent/
-│   │   ├── core/          # LLM封装、消息适配、A2A-lite任务调度
+│   │   ├── core/           # LLM封装、消息适配、进程内统一子任务结果
+│   │   ├── a2a/            # 政策Agent的官方A2A服务端与PlanningAgent客户端
 │   │   ├── agents/         # AgriGraph主图、Prompt、Planning及专业Agent
 │   │   ├── tools/          # Agent工具注册、诊断/政策检索/联网搜索工具
 │   │   ├── api/             # FastAPI路由
@@ -167,7 +178,28 @@ uvicorn agri_agent.api.main:app --reload
 
 后端默认跑在 `http://127.0.0.1:8000`，可以访问 `/docs` 看自动生成的交互式API文档。
 
-### 4. 安装依赖并启动前端
+### 4.（推荐）启用政策Agent的官方A2A调用
+
+不开A2A服务时，`PlanningAgent`会直接调用进程内政策Agent；要验证真正的跨服务协作，打开两个终端。
+
+终端一启动独立政策Agent服务：
+
+```bash
+cd backend/src
+python -m agri_agent.a2a.policy_server
+```
+
+终端二让主服务通过A2A发现并调用它（PowerShell）：
+
+```powershell
+$env:POLICY_A2A_URL="http://127.0.0.1:8011"
+cd backend/src
+python -m agri_agent.api.main
+```
+
+客户端会先读取服务发布的Agent Card，再通过A2A JSON-RPC发送结构化Message并接收Task/Artifact。关闭终端一后再次请求`/planning`，可以观察到主服务自动回退本地政策Agent。
+
+### 5. 安装依赖并启动前端
 
 ```bash
 cd frontend
@@ -177,7 +209,7 @@ streamlit run app.py
 
 默认会自动打开浏览器页面，前端只保留聊天入口；作物、地区和症状等信息由系统识别或在对话中继续追问。
 
-### 5.（可选）把AgriAgent自己当MCP Server跑起来
+### 6.（可选）把AgriAgent自己当MCP Server跑起来
 
 除了作为HTTP服务被Streamlit调用，`backend/src/agri_agent/mcp_server.py`还能把诊断/天气/政策三个工具反向暴露成一个MCP Server，供别的MCP客户端（比如Claude Desktop）调用——这是跟第3步FastAPI服务完全独立的另一种暴露方式，两者互不冲突，不需要都启动。
 
@@ -194,7 +226,7 @@ mcp dev backend/src/agri_agent/mcp_server.py
 
 会打开一个交互式Inspector页面，可以直接点开每个工具、填参数、看返回结果。
 
-### 6. 确认单一主线
+### 7. 确认单一主线
 
 项目不再提供 Agent 实现切换。`/chat`、`/planning` 和前端聊天全部进入 `AgriGraphAgent`；`PlanningAgent` 是主图 Planning 节点内部的编排组件，不是第二套聊天入口。
 
@@ -211,8 +243,9 @@ mcp dev backend/src/agri_agent/mcp_server.py
 ```bash
 cd backend
 python tests/test_agri_graph.py                     # 统一主图：路由/追问/槽位记忆/ReAct/Planning
-python tests/test_planning_agent.py                 # PlanningAgent的编排/失败隔离/A2A-lite Task状态机逻辑
-python tests/test_a2a_lite.py                        # a2a_lite.py本身：AgentCard/Message/Task/dispatch_task
+python tests/test_planning_agent.py                 # PlanningAgent并发编排、A2A选择与本地回退
+python tests/test_policy_a2a.py                     # 官方A2A Agent Card、JSON-RPC、Task/Artifact端到端测试
+python tests/test_subagent_task.py                  # 进程内子Agent统一任务结果与失败隔离
 python tests/test_policy_agent_fallback.py          # 政策模块本地+联网兜底的分支逻辑
 python tests/test_myllm_retry.py                    # MyLLM限流自动重试逻辑
 python tests/test_long_context_diagnosis_tool.py    # 长上下文诊断的JSON解析容错、越界过滤、异常兜底
@@ -226,9 +259,7 @@ python tests/test_policy_match_tool.py              # 政策模块两阶段检�
 python -m pytest -q
 ```
 
-当前单一主线版本的结果为 `53 passed`。旧版本曾有 71 项测试，收敛后删除了两套旧 Agent 及其重复测试，因此不能直接用数量大小比较覆盖质量。
-
-Agent和编排测试使用假LLM做依赖注入，不需要真实模型请求；但导入政策工具时仍会加载本地BGE模型。`test_policy_match_tool.py`第一次运行会从HuggingFace下载模型，需要联网，也会慢一些，属于正常现象。
+A2A测试通过内存内的ASGI传输完成真实Agent Card发现和JSON-RPC协议交互，不依赖外网；Agent和编排测试使用假LLM做依赖注入，不调用真实模型。`test_policy_match_tool.py`第一次运行可能从HuggingFace下载BGE模型，需要联网，也会慢一些。
 
 ## 实验：诊断模块检索方法量化对比
 
@@ -257,7 +288,7 @@ python eval/diagnosis_retrieval_eval.py
 诚实列出目前明确知道、暂时接受的边界，而不是假装没有：
 
 - 诊断模块的模糊匹配（RapidFuzz）能容忍"换一两个字"的近义表达，但扛不住"插入式改写"（比如"叶子有点黄"相对"叶子发黄"），这是编辑距离算法的固有边界——新加的长上下文直接推理路线理论上能解决这个问题，但代价是每次诊断都要多一次大模型调用，具体准确率提升多少、成本涨多少，见上面的量化对比实验，不是靠感觉判断。
-- A2A-lite（`core/a2a_lite.py`）只借鉴了A2A协议的核心设计理念（Agent Card、统一消息信封、Task状态机），传输层仍然是进程内函数调用，不是真正的JSON-RPC/HTTP协议栈——这是刻意的取舍，不是没做完，具体理由见模块顶部注释。
+- A2A当前落地的是政策Agent这一条真实跨服务链路，覆盖Agent Card发现、JSON-RPC消息、Task状态与Artifact结果；暂未实现流式响应、Push Notification、鉴权和多节点部署，因此应描述为“实现A2A接入”，而不是“从零实现完整A2A协议栈”。
 - 病虫害知识库目前77条、政策知识库28条，覆盖的是常见作物和主要省份，不是穷尽性覆盖；两个模块都有"本地查不到就兜底"的设计（诊断兜底用大模型通用知识、政策兜底联网搜索），但兜底结果的可信度低于本地人工核实过的数据，代码里会明确标注。
 - 图片上传目前只处理一张，多图场景还没做。
 - 统一AgriGraph仍使用内存`MemorySaver`；服务重启后会在首次请求时用前端保存的历史和结构化上下文恢复单机会话，但这不是多实例共享的持久化方案，也还没有长对话总结与槽位过期策略。
@@ -266,6 +297,6 @@ python eval/diagnosis_retrieval_eval.py
 ## Roadmap
 
 - [ ] 对话流式输出（打字机效果）
-- [ ] 把统一图返回的Planning Task状态接入前端轨迹面板
+- [ ] 把`PlanningAgent`的本地/A2A任务执行轨迹接入前端可视化，展示协议、task_id、状态和回退原因
 - [ ] 如果长上下文对比实验证明诊断准确率提升明显，考虑给它加缓存/限流，控制多调用一次大模型带来的成本
 - [ ] 将内存`MemorySaver`升级为SQLite/Postgres checkpointer，并增加长对话总结与槽位过期策略
