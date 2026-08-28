@@ -132,7 +132,7 @@ agri-agent/
 │   │   ├── models/         # Pydantic请求/响应模型
 │   │   └── mcp_server.py   # 把诊断/天气/政策工具反向暴露成MCP Server
 │   ├── data/                 # 病虫害知识库（77条）、政策知识库（28条），JSON格式
-│   ├── eval/                 # 诊断检索方法量化对比实验（见下方"实验"部分）
+│   ├── eval/                 # 140个场景的端到端评测与诊断检索对比实验
 │   ├── tests/                # 自动化测试（见下方"测试"部分）
 │   ├── requirements.txt
 │   └── requirements-langgraph.txt   # 兼容旧安装命令，依赖已并入requirements.txt
@@ -251,6 +251,7 @@ python tests/test_myllm_retry.py                    # MyLLM限流自动重试逻
 python tests/test_long_context_diagnosis_tool.py    # 长上下文诊断的JSON解析容错、越界过滤、异常兜底
 python tests/test_pest_knowledge_tool.py            # 诊断模块模糊匹配的真实行为（含已知边界的回归测试）
 python tests/test_policy_match_tool.py              # 政策模块两阶段检索的真实行为（含地区硬过滤回归测试）
+python tests/test_e2e_eval.py                       # 端到端数据构造、严格评分与报告汇总
 ```
 
 也可以在 `backend` 目录运行完整回归：
@@ -260,6 +261,32 @@ python -m pytest -q
 ```
 
 A2A测试通过内存内的ASGI传输完成真实Agent Card发现和JSON-RPC协议交互，不依赖外网；Agent和编排测试使用假LLM做依赖注入，不调用真实模型。`test_policy_match_tool.py`第一次运行可能从HuggingFace下载BGE模型，需要联网，也会慢一些。
+
+## 端到端 Agent 评测
+
+```powershell
+cd backend
+python eval\build_e2e_eval.py
+python eval\e2e_agent_eval.py --limit 5 --tag smoke
+python eval\e2e_agent_eval.py --tag main --resume
+```
+
+评测集包含 **140 个农业场景任务、164 轮对话**，覆盖 60 个单工具任务、24 个复合多 Agent 任务、24 个多轮补槽任务，以及直接回答与模糊请求澄清。作物、症状和地区取自仓库知识库，问题由固定场景模板构造；它用于可复现实验，不代表线上真实用户流量。
+
+评测通过公开 `run` 接口真实执行整张 LangGraph，并同时校验路由、能力集合、状态槽位、ToolNode 调用轨迹、Planning 子任务状态和非错误输出。外部模型与高德 MCP 的失败不会从分母中剔除。完整报告见 [`backend/eval/results/e2e_agent_report_main.md`](backend/eval/results/e2e_agent_report_main.md)。
+
+| 指标 | 结果 |
+| --- | ---: |
+| 端到端任务完成率 | **98.57%（138/140）** |
+| 工具调用 F1 | **99.41%** |
+| 状态字段准确率 | **100.00%** |
+| 缺参追问正确率 | **100.00%** |
+| Planning 子任务完成率 | **100.00%** |
+| 无动作场景误触发率 ↓ | **1.79%** |
+| P95 端到端延迟 | **16.207s** |
+| 运行时异常 | **0** |
+
+两条失败均来自一般农艺问答：一条把轮作问题误判成政策检索，另一条对连作原理进行了不必要的追问。报告保留失败记录，不通过修改标签或剔除样本改善数字。
 
 ## 实验：诊断模块检索方法量化对比
 

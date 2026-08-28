@@ -4,3 +4,4 @@ __pycache__/
 .pytest_cache/
 .venv-a2a/
 .venv-langgraph/
+backend/eval/results/*.partial.json
