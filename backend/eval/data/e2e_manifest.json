@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "tasks": 140,
+  "turns": 164,
+  "construction": "仓库知识库真实槽位与固定农业场景模板组合；不代表线上用户流量",
+  "coverage": {
+    "direct": 16,
+    "clarify": 16,
+    "single_tool_diagnosis": 20,
+    "single_tool_weather": 20,
+    "single_tool_policy": 20,
+    "multi_agent_diagnosis_weather": 8,
+    "multi_agent_weather_policy": 8,
+    "multi_agent_all": 8,
+    "multi_turn_slot_diagnosis": 8,
+    "multi_turn_slot_weather": 8,
+    "multi_turn_slot_policy": 8
+  },
+  "scoring_unit": "一个任务的全部轮次同时满足路由、能力、状态、工具/子Agent轨迹和非错误输出才算成功"
+}

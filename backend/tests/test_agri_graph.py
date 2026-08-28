@@ -3,7 +3,7 @@ import os
 import sys
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 os.environ.setdefault("LLM_API_KEY", "test-dummy-key")
 os.environ.setdefault("LLM_BASE_URL", "https://example.invalid/v1")
@@ -18,12 +18,20 @@ from langchain_core.messages import AIMessage
 from agri_agent.agents.agri_graph import AgriGraphAgent, RouteDecision
 
 
+def test_route_decision_normalizes_model_aliases():
+    assert RouteDecision.model_validate({"route": "diagnosis"}).route == "react"
+    assert RouteDecision.model_validate({"route": "multi_agent"}).route == "planning"
+    assert RouteDecision.model_validate({"route": "ask_user"}).route == "clarify"
+
+
 class _ScriptedLLM:
     def __init__(self, responses=None):
         self.responses = list(responses or [])
         self.received_messages = []
+        self.bound_tool_choices = []
 
-    def bind_tools(self, tools):
+    def bind_tools(self, tools, **kwargs):
+        self.bound_tool_choices.append(kwargs.get("tool_choice"))
         return self
 
     def invoke(self, messages):
@@ -97,7 +105,7 @@ def test_direct_route_answers_without_tools_or_planning():
 
 
 def test_empty_router_result_uses_keyword_fallback():
-    router = _ScriptedRouter([None])
+    router = _ScriptedRouter([None, None, None])
     llm = _ScriptedLLM([AIMessage(content="你好，我可以帮你处理农事问题。")])
     agent = _make_agent(router, llm)
 
@@ -108,6 +116,41 @@ def test_empty_router_result_uses_keyword_fallback():
     assert snapshot["route"] == "direct"
     assert snapshot["capabilities"] == []
     print("测试通过：结构化路由返回空结果时自动回退，不中断普通对话")
+
+
+def test_vague_request_is_forced_to_single_high_value_clarification():
+    router = _ScriptedRouter([
+        RouteDecision(
+            route="direct",
+            missing_fields=["crop", "city", "region", "symptom", "need"],
+            confidence=0.8,
+        ),
+    ])
+    agent = _make_agent(router)
+
+    answer = agent.run("地里有点问题。", thread_id="vague-request-thread")
+    snapshot = agent.get_snapshot("vague-request-thread")
+
+    assert snapshot["route"] == "clarify"
+    assert snapshot["capabilities"] == []
+    assert snapshot["missing_fields"] == ["request"]
+    assert "具体描述" in answer
+
+
+def test_router_empty_response_retries_before_fallback():
+    router = _ScriptedRouter([
+        None,
+        RouteDecision(route="direct", confidence=0.95),
+    ])
+    llm = _ScriptedLLM([AIMessage(content="重试成功。")])
+    agent = _make_agent(router, llm)
+    agent.ROUTER_RETRY_BACKOFF_S = 0
+
+    answer = agent.run("你好", thread_id="router-retry-thread")
+
+    assert answer == "重试成功。"
+    assert len(router.received_messages) == 2
+    assert agent.get_snapshot("router-retry-thread")["confidence"] == 0.95
 
 
 def test_followup_explanation_uses_recent_dialogue_instead_of_clarifying():
@@ -267,11 +310,17 @@ def test_single_capability_is_not_forced_into_planning():
             confidence=0.95,
         ),
     ])
-    llm = _ScriptedLLM([AIMessage(content="这是单项天气回答。")])
+    llm = _ScriptedLLM([
+        AIMessage(content="未调用天气工具的回答。"),
+        AIMessage(content="这是单项天气回答。"),
+    ])
     planning = _FakePlanningAgent()
-    agent = _make_agent(router, llm, planning)
-
-    answer = agent.run("南京现在的天气适合打药吗", thread_id="single-capability-thread")
+    with patch(
+        "agri_agent.tools.agent_tools.query_weather",
+        new=AsyncMock(return_value={"forecast": "晴"}),
+    ):
+        agent = _make_agent(router, llm, planning)
+        answer = agent.run("南京现在的天气适合打药吗", thread_id="single-capability-thread")
     snapshot = agent.get_snapshot("single-capability-thread")
 
     assert answer == "这是单项天气回答。"
@@ -320,13 +369,19 @@ def test_missing_slot_is_clarified_and_completed_on_next_turn():
             confidence=0.95,
         ),
     ])
-    llm = _ScriptedLLM([AIMessage(content="我会根据水稻叶片发黄的情况给出建议。")])
-    agent = _make_agent(router, llm)
-
-    first_answer = agent.run("叶片最近发黄", thread_id="slot-thread")
-    first_snapshot = agent.get_snapshot("slot-thread")
-    second_answer = agent.run("水稻", thread_id="slot-thread")
-    second_snapshot = agent.get_snapshot("slot-thread")
+    llm = _ScriptedLLM([
+        AIMessage(content="未调用诊断工具的回答。"),
+        AIMessage(content="我会根据水稻叶片发黄的情况给出建议。"),
+    ])
+    with patch(
+        "agri_agent.tools.agent_tools.match_pest_knowledge",
+        return_value=[{"causes": ["可能积水"], "recommendations": ["及时排水"]}],
+    ):
+        agent = _make_agent(router, llm)
+        first_answer = agent.run("叶片最近发黄", thread_id="slot-thread")
+        first_snapshot = agent.get_snapshot("slot-thread")
+        second_answer = agent.run("水稻", thread_id="slot-thread")
+        second_snapshot = agent.get_snapshot("slot-thread")
 
     assert "作物" in first_answer
     assert first_snapshot["route"] == "clarify"
@@ -370,7 +425,36 @@ def test_react_route_executes_tool_and_preserves_frontend_trace():
     assert [message["role"] for message in history] == ["user", "assistant", "tool", "assistant"]
     assert history[1]["tool_calls"][0]["id"] == tool_call_id
     assert history[2]["tool_call_id"] == tool_call_id
+    assert "diagnose_crop_disease" in llm.bound_tool_choices
     print("测试通过：react路线执行真实ToolNode，并保留前端工具轨迹所需消息")
+
+
+def test_react_runtime_guard_forces_tool_when_provider_ignores_tool_choice():
+    router = _ScriptedRouter([
+        RouteDecision(
+            route="react",
+            capabilities=["diagnosis"],
+            crop="水稻",
+            symptom="叶片发黄",
+            confidence=0.95,
+        ),
+    ])
+    llm = _ScriptedLLM([
+        AIMessage(content="未经检索直接生成的回答"),
+        AIMessage(content="根据工具返回，建议先检查田间排水。"),
+    ])
+
+    with patch(
+        "agri_agent.tools.agent_tools.match_pest_knowledge",
+        return_value=[{"causes": ["可能积水"], "recommendations": ["及时排水"]}],
+    ):
+        agent = _make_agent(router, llm)
+        answer = agent.run("水稻叶片发黄怎么办", thread_id="guard-thread")
+
+    history = agent.get_history("guard-thread")
+    assert answer.startswith("根据工具返回")
+    assert [message["role"] for message in history] == ["user", "assistant", "tool", "assistant"]
+    assert history[1]["tool_calls"][0]["function"]["name"] == "diagnose_crop_disease"
 
 
 def test_multiple_capabilities_enter_selective_planning():
@@ -395,6 +479,31 @@ def test_multiple_capabilities_enter_selective_planning():
     assert planning.calls[0]["capabilities"] == ["diagnosis", "weather"]
     assert planning.calls[0]["region"] == "湖南省"
     print("测试通过：两个能力需求自动升级为planning，并补全高置信城市所属省份")
+
+
+def test_keyword_rules_supplement_instead_of_overwrite_model_capabilities():
+    router = _ScriptedRouter([
+        RouteDecision(
+            route="planning",
+            capabilities=["diagnosis", "weather"],
+            crop="玉米",
+            city="长沙",
+            symptom="果穗变成黑粉包",
+            confidence=0.95,
+        ),
+    ])
+    planning = _FakePlanningAgent()
+    agent = _make_agent(router, planning_agent=planning)
+
+    agent.run(
+        "玉米果穗变成黑粉包，再看看长沙明天的天气。",
+        thread_id="capability-union-thread",
+    )
+    snapshot = agent.get_snapshot("capability-union-thread")
+
+    assert snapshot["route"] == "planning"
+    assert snapshot["capabilities"] == ["diagnosis", "weather"]
+    assert planning.calls[0]["capabilities"] == ["diagnosis", "weather"]
 
 
 def test_structured_form_forces_planning_and_bypasses_router():

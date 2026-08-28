@@ -1,7 +1,9 @@
 """AgriAgent统一主图：意图路由、ReAct工具调用、Planning节点和多轮槽位状态。"""
 import os
+import time
 from datetime import date
 from typing import Annotated, Literal, Optional, TypedDict
+from uuid import uuid4
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from langchain_openai import ChatOpenAI
@@ -9,7 +11,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from agri_agent.agents.planning_agent import PlanningAgent
 from agri_agent.agents.prompts import IMAGE_DESCRIBE_PROMPT, SYSTEM_PROMPT, VISION_MODEL
@@ -36,6 +38,26 @@ class RouteDecision(BaseModel):
     has_symptom: Optional[bool] = None
     missing_fields: list[str] = Field(default_factory=list)
     confidence: float = Field(default=0.8, ge=0.0, le=1.0)
+
+    @field_validator("route", mode="before")
+    @classmethod
+    def normalize_model_route(cls, value):
+        """兼容部分 OpenAI-Compatible 模型把能力名填入 route 的情况。"""
+        aliases = {
+            "diagnosis": "react",
+            "weather": "react",
+            "policy": "react",
+            "tool": "react",
+            "function_calling": "react",
+            "plan": "planning",
+            "multi_agent": "planning",
+            "answer": "direct",
+            "chat": "direct",
+            "ask_user": "clarify",
+            "clarification": "clarify",
+        }
+        normalized = str(value).strip().lower() if value is not None else value
+        return aliases.get(normalized, normalized)
 
 
 class AgriState(TypedDict, total=False):
@@ -112,6 +134,12 @@ _REQUIRED_FIELDS = {
     "policy": ("crop", "region"),
 }
 
+_CAPABILITY_TOOL_NAMES = {
+    "diagnosis": "diagnose_crop_disease",
+    "weather": "get_weather_forecast",
+    "policy": "search_subsidy_policy",
+}
+
 _EXPLICIT_CAPABILITY_KEYWORDS = {
     "diagnosis": ("症状", "病害", "虫害", "发黄", "斑点", "卷叶", "枯萎"),
     "weather": ("天气", "气温", "下雨", "降雨", "打药", "灌溉", "收割"),
@@ -146,12 +174,21 @@ _NO_SYMPTOM_PHRASES = (
     "没有症状", "没症状", "还没有症状", "未出现症状", "没发现异常", "没有病虫害",
 )
 
+_VAGUE_REQUEST_PATTERNS = (
+    "帮我看看", "这个怎么办", "有点问题", "这情况正常吗", "帮我分析",
+    "问题想请教", "感觉不太对", "帮我处理", "拿不准", "有点麻烦",
+    "需要怎么弄", "出了点状况", "不知道下一步", "帮忙判断",
+    "说不清楚", "给点建议",
+)
+
 
 class AgriGraphAgent:
     """面向API的统一Agent，所有用户入口最终进入这张图。"""
 
     MAX_TOOL_ROUNDS = 5
     MIN_ROUTE_CONFIDENCE = 0.65
+    ROUTER_RETRIES = 2
+    ROUTER_RETRY_BACKOFF_S = 0.5
 
     def __init__(
         self,
@@ -306,6 +343,13 @@ class AgriGraphAgent:
         return any(phrase in text for phrase in _NO_SYMPTOM_PHRASES)
 
     @staticmethod
+    def _is_vague_request(text: str) -> bool:
+        compact = text.strip().rstrip("。！？?!")
+        return len(compact) <= 24 and any(
+            phrase in compact for phrase in _VAGUE_REQUEST_PATTERNS
+        )
+
+    @staticmethod
     def _infer_pending_slot(answer: str) -> Optional[str]:
         tail = answer[-500:]
         asks_question = any(marker in tail for marker in ("请告诉", "请问", "您目前", "能否告知", "？", "?"))
@@ -332,6 +376,23 @@ class AgriGraphAgent:
         else:
             route = "direct"
         return RouteDecision(route=route, capabilities=capabilities, confidence=0.7)
+
+    def _invoke_router(self, messages: list) -> RouteDecision:
+        """对短暂空响应或协议解析失败做有限重试，最终仍交给保守兜底。"""
+        last_error: Exception | None = None
+        for attempt in range(self.ROUTER_RETRIES + 1):
+            try:
+                decision = self.router.invoke(messages)
+                if decision is None:
+                    raise ValueError("路由模型返回空结果")
+                if not isinstance(decision, RouteDecision):
+                    decision = RouteDecision.model_validate(decision)
+                return decision
+            except Exception as exc:
+                last_error = exc
+                if attempt < self.ROUTER_RETRIES:
+                    time.sleep(self.ROUTER_RETRY_BACKOFF_S * (attempt + 1))
+        raise last_error or RuntimeError("路由模型调用失败")
 
     def _route_node(self, state: AgriState) -> dict:
         mode = state.get("mode", "auto")
@@ -371,11 +432,7 @@ class AgriGraphAgent:
                 ),
             ]
             try:
-                decision = self.router.invoke(router_messages)
-                if decision is None:
-                    raise ValueError("路由模型返回空结果")
-                if not isinstance(decision, RouteDecision):
-                    decision = RouteDecision.model_validate(decision)
+                decision = self._invoke_router(router_messages)
             except Exception as exc:
                 print(f"[AgriGraph] 路由模型失败，使用保守规则兜底：{exc}")
                 decision = self._fallback_decision(state)
@@ -415,11 +472,14 @@ class AgriGraphAgent:
 
         effective = {**known, **updates}
         explicit_capabilities = self._explicit_capabilities(latest_user_text)
-        capabilities = (
-            list(explicit_capabilities)
-            if explicit_capabilities
-            else list(dict.fromkeys(decision.capabilities))
-        )
+        vague_request = self._is_vague_request(latest_user_text)
+        # 确定性关键词用于补充模型结果，而不是覆盖模型识别出的隐含能力。
+        # 例如“玉米果穗变成黑粉包，再看看天气”只有天气命中显式关键词，
+        # 但模型识别出的 diagnosis 仍必须保留，才能进入多 Agent 编排。
+        capabilities = list(dict.fromkeys([
+            *decision.capabilities,
+            *explicit_capabilities,
+        ]))
         route = decision.route
         confidence = decision.confidence
         next_pending_slot = state.get("pending_slot")
@@ -453,8 +513,12 @@ class AgriGraphAgent:
             capabilities = []
             confidence = max(confidence, 0.8)
 
+        if vague_request and not explicit_capabilities and not self._should_answer_from_context(state):
+            route = "clarify"
+            capabilities = []
+            confidence = max(confidence, 0.9)
+
         if explicit_capabilities:
-            capabilities = list(explicit_capabilities)
             route = (
                 "planning"
                 if self._is_explicit_plan_request(latest_user_text) or len(capabilities) >= 2
@@ -506,7 +570,9 @@ class AgriGraphAgent:
                 if not effective.get(field_name) and field_name not in missing_fields:
                     missing_fields.append(field_name)
 
-        if route == "clarify" and not missing_fields:
+        if vague_request and route == "clarify":
+            missing_fields = ["request"]
+        elif route == "clarify" and not missing_fields:
             allowed = set(_SLOT_LABELS)
             missing_fields = [name for name in decision.missing_fields if name in allowed] or ["request"]
         elif missing_fields:
@@ -564,7 +630,43 @@ class AgriGraphAgent:
                 "tool_rounds": rounds,
             }
 
-        response = self.llm_with_tools.invoke(self._model_messages(state))
+        model = self.llm_with_tools
+        capabilities = state.get("capabilities") or []
+        # 路由器已经确认单一能力且必填槽位齐全时，第一轮必须落到对应工具，
+        # 避免模型跳过检索、直接凭参数知识回答。工具返回后恢复自动选择，
+        # 政策检索仍可根据本地结果继续调用联网回退。
+        if rounds == 0 and len(capabilities) == 1:
+            tool_name = _CAPABILITY_TOOL_NAMES.get(capabilities[0])
+            if tool_name:
+                model = self.llm.bind_tools(TOOLS, tool_choice=tool_name)
+
+        response = model.invoke(self._model_messages(state))
+        if rounds == 0 and len(capabilities) == 1 and not getattr(response, "tool_calls", None):
+            capability = capabilities[0]
+            tool_name = _CAPABILITY_TOOL_NAMES.get(capability)
+            tool_args = {
+                "diagnosis": {
+                    "crop": state.get("crop"),
+                    "symptom_text": state.get("symptom"),
+                },
+                "weather": {"city": state.get("city")},
+                "policy": {
+                    "crop": state.get("crop"),
+                    "region": state.get("region"),
+                    "need": state.get("need") or "种植补贴",
+                },
+            }.get(capability)
+            if tool_name and tool_args and all(value for value in tool_args.values()):
+                # 部分 OpenAI-Compatible 服务会忽略 tool_choice。此处把已由路由器
+                # 确认的能力和已校验槽位转换为标准 ToolCall，确保先检索再回答。
+                response = AIMessage(
+                    content="",
+                    tool_calls=[{
+                        "name": tool_name,
+                        "args": tool_args,
+                        "id": f"guard-{uuid4().hex}",
+                    }],
+                )
         return {"messages": [response], "tool_rounds": rounds}
 
     @staticmethod
@@ -583,7 +685,13 @@ class AgriGraphAgent:
                 capabilities=state.get("capabilities"),
             )
             task_status = {
-                key: {"status": task.status, "error": task.error}
+                key: {
+                    "status": task.status,
+                    "error": task.error,
+                    "protocol": getattr(task, "protocol", "local"),
+                    "task_id": getattr(task, "task_id", None),
+                    "fallback_reason": getattr(task, "fallback_reason", None),
+                }
                 for key, task in self.planning_agent.last_tasks.items()
             }
         except Exception as exc:
