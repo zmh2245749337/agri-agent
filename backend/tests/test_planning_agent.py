@@ -8,14 +8,8 @@
 内部的正确性是两件独立的事（那部分分别由diagnosis_agent/weather_agent/
 policy_agent各自的测试和手动验证负责）。
 
-PlanningAgent调子Agent这一步现在走的是core/a2a_lite.py里借鉴A2A协议理念
-做的dispatch_task（产出有状态机的Task对象），取代了之前的_safe_call
-（try/except+返回None）——这份测试文件里"某个子Agent失败/全部失败/顺序
-不受影响"这几条行为语义完全没变，只是失败/成功的记录方式从裸的None变成了
-Task.status，所以这些测试改造前后都应该原样通过（这也是这次改造刻意追求的
-"行为不变、只换表达方式"）。新增的两条测试专门验证Task状态机本身记录得对不对，
-跟a2a_lite.py自己的单元测试（test_a2a_lite.py）分工不同：这里测的是
-PlanningAgent怎么用这套协议，那边测的是协议本身的行为。
+政策子Agent支持通过官方A2A SDK独立服务化；这里验证PlanningAgent的选择逻辑：
+配置远程客户端时走A2A，远程失败时回退本地，其余两个子Agent的并发和降级语义不变。
 """
 import sys
 import time
@@ -25,6 +19,7 @@ from unittest.mock import patch
 sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
 from agri_agent.agents.planning_agent import PlanningAgent
+from agri_agent.core.subagent_task import SubAgentTask
 
 
 def _make_agent_with_fakes(diagnosis_run, weather_run, policy_run, final_run):
@@ -36,6 +31,8 @@ def _make_agent_with_fakes(diagnosis_run, weather_run, policy_run, final_run):
     agent.weather_agent = type("Fake", (), {"run": staticmethod(weather_run)})()
     agent.policy_agent = type("Fake", (), {"run": staticmethod(policy_run)})()
     agent.agent = type("Fake", (), {"run": staticmethod(final_run)})()
+    agent.policy_a2a_client = None
+    agent.last_tasks = {}
     return agent
 
 
@@ -164,7 +161,7 @@ def test_section_order_stays_fixed_regardless_of_completion_order():
 
 
 def test_last_tasks_records_task_status_for_each_subagent():
-    """A2A-lite改造后，run()结束应该把三个子Agent各自的Task对象记录在
+    """run()结束应该把三个子Agent各自的统一Task对象记录在
     self.last_tasks里，状态机(completed/failed)要如实反映每个子Agent的
     真实执行结果——这是协议化改造之后新增的可观测性，专门验证它真的生效了，
     不是只加了个没人读的字段"""
@@ -230,6 +227,52 @@ def test_explicit_capabilities_only_run_requested_subagents():
     assert "严禁创建空章节" in result
     assert '分成"近期要做的事"和"可以了解的政策/资源"两部分' not in result
     print("测试通过：显式capabilities只执行本轮需要的专业模块，不会无条件查询政策")
+
+
+def test_policy_uses_remote_a2a_when_client_is_configured():
+    class FakeA2AClient:
+        def run(self, crop, region, need):
+            return SubAgentTask(
+                agent_name="远程政策Agent",
+                input_text=f"{crop}/{region}/{need}",
+                protocol="A2A/JSONRPC",
+                status="completed",
+                result_text="远程A2A政策结果",
+            )
+
+    agent = _make_agent_with_fakes(
+        diagnosis_run=lambda crop, symptom: "诊断建议",
+        weather_run=lambda city: "天气建议",
+        policy_run=lambda crop, region, need: "不应调用本地政策Agent",
+        final_run=lambda prompt: prompt,
+    )
+    agent.policy_a2a_client = FakeA2AClient()
+
+    result = agent.run("水稻", "长沙", "湖南省", "叶片发黄")
+
+    assert "远程A2A政策结果" in result
+    assert agent.last_tasks["policy"].protocol == "A2A/JSONRPC"
+
+
+def test_policy_a2a_failure_falls_back_to_local_agent():
+    class FailingA2AClient:
+        def run(self, crop, region, need):
+            raise RuntimeError("远程服务不可达")
+
+    agent = _make_agent_with_fakes(
+        diagnosis_run=lambda crop, symptom: "诊断建议",
+        weather_run=lambda city: "天气建议",
+        policy_run=lambda crop, region, need: "本地回退政策结果",
+        final_run=lambda prompt: prompt,
+    )
+    agent.policy_a2a_client = FailingA2AClient()
+
+    result = agent.run("水稻", "长沙", "湖南省", "叶片发黄")
+
+    policy_task = agent.last_tasks["policy"]
+    assert "本地回退政策结果" in result
+    assert policy_task.protocol == "local-fallback"
+    assert "远程服务不可达" in policy_task.fallback_reason
 
 
 if __name__ == "__main__":

@@ -13,3 +13,5 @@ mcp
 fastapi
 uvicorn[standard]
 pydantic
+a2a-sdk[http-server]>=1.0,<2
+httpx>=0.28
