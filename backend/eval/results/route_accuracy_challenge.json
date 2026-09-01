@@ -1,0 +1,533 @@
+{
+  "summary": {
+    "samples": 25,
+    "route_accuracy": 0.56,
+    "route_accuracy_excl_fallback": 0.6,
+    "fallback_free_samples": 20,
+    "per_route_accuracy": {
+      "direct": {
+        "n": 12,
+        "accuracy": 0.8333
+      },
+      "react": {
+        "n": 7,
+        "accuracy": 0.0
+      },
+      "planning": {
+        "n": 4,
+        "accuracy": 0.75
+      },
+      "clarify": {
+        "n": 2,
+        "accuracy": 0.5
+      }
+    },
+    "confusion_matrix": {
+      "direct": {
+        "direct": 10,
+        "clarify": 1,
+        "react": 1
+      },
+      "react": {
+        "direct": 3,
+        "clarify": 4
+      },
+      "planning": {
+        "planning": 3,
+        "react": 1
+      },
+      "clarify": {
+        "clarify": 1,
+        "direct": 1
+      }
+    },
+    "capability_precision": 0.8462,
+    "capability_recall": 0.7333,
+    "capability_f1": 0.7857,
+    "capability_exact_rate": 0.76,
+    "no_capability_turns": 14,
+    "false_trigger_count": 2,
+    "false_trigger_rate": 0.1429,
+    "fallback_hits": 5,
+    "fallback_reasons": [],
+    "error_count": 0,
+    "avg_latency_s": 2.821,
+    "router_retries": 0
+  },
+  "records": [
+    {
+      "id": "chal_001",
+      "kind": "challenge_anaphora",
+      "source": "handwritten",
+      "query": "那具体怎么做",
+      "has_history": true,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.568,
+      "error": null
+    },
+    {
+      "id": "chal_002",
+      "kind": "challenge_anaphora",
+      "source": "handwritten",
+      "query": "为什么是这个原因",
+      "has_history": true,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 4.846,
+      "error": null
+    },
+    {
+      "id": "chal_003",
+      "kind": "challenge_anaphora",
+      "source": "handwritten",
+      "query": "刚才那句什么意思",
+      "has_history": true,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 5.277,
+      "error": null
+    },
+    {
+      "id": "chal_004",
+      "kind": "challenge_slot_answer",
+      "source": "handwritten",
+      "query": "还没播种",
+      "has_history": true,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.177,
+      "error": null
+    },
+    {
+      "id": "chal_005",
+      "kind": "challenge_slot_answer",
+      "source": "handwritten",
+      "query": "湖南省",
+      "has_history": true,
+      "gold_route": "react",
+      "pred_route": "direct",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.459,
+      "error": null
+    },
+    {
+      "id": "chal_006",
+      "kind": "challenge_province_as_city",
+      "source": "handwritten",
+      "query": "江苏明天天气怎么样",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.887,
+      "error": null
+    },
+    {
+      "id": "chal_007",
+      "kind": "challenge_province_as_city",
+      "source": "handwritten",
+      "query": "湖南这几天有雨吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.415,
+      "error": null
+    },
+    {
+      "id": "chal_008",
+      "kind": "challenge_province_as_city",
+      "source": "handwritten",
+      "query": "广东省下周适合收割吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.012,
+      "error": null
+    },
+    {
+      "id": "chal_009",
+      "kind": "challenge_agronomy_not_weather",
+      "source": "handwritten",
+      "query": "现在适合播种玉米吗",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.836,
+      "error": null
+    },
+    {
+      "id": "chal_010",
+      "kind": "challenge_agronomy_not_weather",
+      "source": "handwritten",
+      "query": "这个时候种花生晚不晚",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 6.248,
+      "error": null
+    },
+    {
+      "id": "chal_011",
+      "kind": "challenge_agronomy_not_weather",
+      "source": "handwritten",
+      "query": "水稻现在能移栽了吗",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.845,
+      "error": null
+    },
+    {
+      "id": "chal_012",
+      "kind": "challenge_implicit_multi",
+      "source": "handwritten",
+      "query": "我的番茄叶子有黄斑，广州最近的天气会不会加重",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 2.284,
+      "error": null
+    },
+    {
+      "id": "chal_013",
+      "kind": "challenge_implicit_multi",
+      "source": "handwritten",
+      "query": "河南种小麦能领补贴吗，郑州这两天下不下雨",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "policy",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.098,
+      "error": null
+    },
+    {
+      "id": "chal_014",
+      "kind": "challenge_implicit_multi",
+      "source": "handwritten",
+      "query": "柑橘落果厉害，昆明天气和云南的补贴一起帮我看看",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "policy",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": false,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.869,
+      "error": null
+    },
+    {
+      "id": "chal_015",
+      "kind": "challenge_closing",
+      "source": "handwritten",
+      "query": "好的谢谢，先这样",
+      "has_history": true,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.64,
+      "error": null
+    },
+    {
+      "id": "chal_016",
+      "kind": "challenge_closing",
+      "source": "handwritten",
+      "query": "明白了，辛苦",
+      "has_history": true,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.824,
+      "error": null
+    },
+    {
+      "id": "chal_017",
+      "kind": "challenge_vague_agri",
+      "source": "handwritten",
+      "query": "我的地里有点不对劲",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 2.483,
+      "error": null
+    },
+    {
+      "id": "chal_018",
+      "kind": "challenge_vague_agri",
+      "source": "handwritten",
+      "query": "今年收成怕是不行",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.967,
+      "error": null
+    },
+    {
+      "id": "chal_019",
+      "kind": "challenge_out_of_scope",
+      "source": "handwritten",
+      "query": "帮我写一份种植合同",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.646,
+      "error": null
+    },
+    {
+      "id": "chal_020",
+      "kind": "challenge_out_of_scope",
+      "source": "handwritten",
+      "query": "农产品现在什么价格",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.658,
+      "error": null
+    },
+    {
+      "id": "chal_021",
+      "kind": "challenge_indirect_single",
+      "source": "handwritten",
+      "query": "最近雨水多，我那块水稻田是不是该排水了",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "direct",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 2.129,
+      "error": null
+    },
+    {
+      "id": "chal_022",
+      "kind": "challenge_indirect_single",
+      "source": "handwritten",
+      "query": "打算下周喷药，得先看看天",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 5.034,
+      "error": null
+    },
+    {
+      "id": "chal_023",
+      "kind": "challenge_indirect_single",
+      "source": "handwritten",
+      "query": "听说种大豆国家给钱，我在安徽",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "direct",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.451,
+      "error": null
+    },
+    {
+      "id": "chal_024",
+      "kind": "challenge_plan_single_cap",
+      "source": "handwritten",
+      "query": "给我一份水稻纹枯病的处理方案",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.287,
+      "error": null
+    },
+    {
+      "id": "chal_025",
+      "kind": "challenge_negation",
+      "source": "handwritten",
+      "query": "不用查天气了",
+      "has_history": true,
+      "gold_route": "direct",
+      "pred_route": "react",
+      "gold_capabilities": [],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.577,
+      "error": null
+    }
+  ]
+}

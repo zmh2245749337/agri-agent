@@ -1,0 +1,31 @@
+{
+  "seed": 42,
+  "main": {
+    "count": 203,
+    "construction": "模板 × 真实槽位值程序化生成；标签由模板决定，无人工标注",
+    "slot_sources": {
+      "crop/symptom": "data/pest_knowledge/knowledge.json 真实条目",
+      "region": "data/policies/policies.json 真实 region 字段（省级）",
+      "city": "常见城市级地名列表（路由器要求 city 必须为城市级）"
+    },
+    "route_distribution": {
+      "clarify": 28,
+      "direct": 68,
+      "planning": 36,
+      "react": 71
+    }
+  },
+  "challenge": {
+    "count": 25,
+    "construction": "人工手写，覆盖指代承接、省市混淆、农时陷阱、隐含多能力、结束语、迂回表述、否定",
+    "label_correction": "2026-08-27 首次跑出结果后发现首版标签规则有误：本评测测的是程序字段校验之后的最终路由，必填字段缺失时系统会强制改判 clarify，而首版只按『用户想问什么能力』标注，把只给省级地名的天气请求标成了 react。已按 _REQUIRED_FIELDS 规则统一重标（每条用 provides 字段显式声明所提供槽位，标签由规则推导可复核）。此修正发生在看到结果之后，须主动披露；除此之外未因指标好看改动任何标签。",
+    "route_distribution": {
+      "clarify": 7,
+      "direct": 12,
+      "planning": 4,
+      "react": 2
+    }
+  },
+  "label_basis": "严格按 agri_graph.py 中 ROUTER_PROMPT 自述的四条路由规则标注；字段缺失不判 clarify（ROUTER_PROMPT 明确由程序另行校验）",
+  "caveat": "模板生成的句子比真实用户提问规整，主集指标偏乐观；challenge 集单独报告，不与主集合并计数"
+}

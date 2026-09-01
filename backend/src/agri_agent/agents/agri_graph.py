@@ -23,12 +23,27 @@ from agri_agent.tools.agent_tools import TOOLS
 Capability = Literal["diagnosis", "weather", "policy"]
 Route = Literal["direct", "react", "planning", "clarify"]
 
+_ROUTE_VALUES = {"direct", "react", "planning", "clarify"}
+_CAPABILITY_VALUES = {"diagnosis", "weather", "policy"}
+
 
 class RouteDecision(BaseModel):
     """路由模型只能输出这些字段，最终路由仍由程序校验。"""
 
-    route: Route
-    capabilities: list[Capability] = Field(default_factory=list)
+    # route 和 capabilities 是两个语义相邻的枚举，小模型容易串位（把 diagnosis
+    # 填进 route、把 planning 填进 capabilities）。这里用 description 把「这是执行
+    # 路线，不是能力」写死在函数签名里，从源头降低串位概率；万一还是串了，由
+    # _repair_route_payload 做确定性还原。
+    route: Route = Field(
+        ...,
+        description="本轮的执行路线，只能是 direct/react/planning/clarify 之一。"
+                    "这是路线，不是农业能力，绝不能填 diagnosis/weather/policy。",
+    )
+    capabilities: list[Capability] = Field(
+        default_factory=list,
+        description="本轮需要的农业能力，只能从 diagnosis/weather/policy 中选。"
+                    "这是能力，不是路线，绝不能填 direct/react/planning/clarify。",
+    )
     crop: Optional[str] = None
     city: Optional[str] = None
     region: Optional[str] = None
@@ -206,10 +221,14 @@ class AgriGraphAgent:
             timeout=60,
         )
         self.llm_with_tools = self.llm.bind_tools(TOOLS)
+        # include_raw=True：解析失败时不直接抛，而是把原始工具调用参数一并返回，
+        # 这样 _coerce_route_decision 才有机会做确定性修复，而不是整次调用作废。
         self.router = router or self.llm.with_structured_output(
             RouteDecision,
             method="function_calling",
+            include_raw=True,
         )
+        self.route_repair_count = 0
         self.planning_agent = planning_agent or PlanningAgent()
         self.vision_llm = vision_llm or MyLLM(model=vision_model or VISION_MODEL)
 
@@ -323,6 +342,75 @@ class AgriGraphAgent:
         )
 
     @staticmethod
+    def _repair_route_payload(payload: dict) -> dict:
+        """
+        修复 route / capabilities 两个枚举字段串位的结构化输出。
+
+        为什么需要：给路由器建了评测集之后（见 backend/eval/route_accuracy_eval.py）
+        发现这是一个稳定的失败模式——模型把能力值填进 route、把路线值填进
+        capabilities。这类输出信息其实是完整的，只是位置放错了，可以确定性还原，
+        没必要整次调用作废去走保守兜底（兜底不提取槽位，会连带把路由改判成 clarify）。
+        修不了的情况原样返回，交给上层兜底，不猜。
+        """
+        data = dict(payload or {})
+        route = data.get("route")
+        caps = data.get("capabilities") or []
+        if not isinstance(caps, list):
+            caps = [caps]
+
+        misplaced_routes = [c for c in caps if c in _ROUTE_VALUES]
+        caps = [c for c in caps if c in _CAPABILITY_VALUES]
+
+        if route in _CAPABILITY_VALUES:            # 能力值被填进了 route
+            if route not in caps:
+                caps.append(route)
+            route = None
+        if route not in _ROUTE_VALUES:
+            if misplaced_routes:                   # 路线值被填进了 capabilities
+                route = misplaced_routes[0]
+            elif len(caps) >= 2:                   # 有两个以上能力，按规则就是 planning
+                route = "planning"
+            elif caps:
+                route = "react"
+            else:
+                return data                        # 信息不足，不猜，交给兜底
+
+        data["route"] = route
+        data["capabilities"] = list(dict.fromkeys(caps))
+
+        # 模型偶尔把单值槽位输出成列表（实测见过 crop=['番茄','玉米']）。
+        # 这同样是位置/类型问题而非信息缺失，取第一个值即可，不必整次调用作废。
+        for field_name in ("crop", "city", "region", "symptom", "need", "growth_stage"):
+            value = data.get(field_name)
+            if isinstance(value, list):
+                data[field_name] = str(value[0]) if value else None
+        return data
+
+    def _coerce_route_decision(self, result):
+        """把路由模型的各种返回形态统一成 RouteDecision，必要时先做字段修复。"""
+        if isinstance(result, RouteDecision):
+            return result                          # 测试里注入的假路由器直接返回对象
+        if result is None:
+            raise ValueError("路由模型返回空结果")
+        if isinstance(result, dict) and ("parsed" in result or "raw" in result):
+            parsed = result.get("parsed")
+            if isinstance(parsed, RouteDecision):
+                return parsed
+            raw = result.get("raw")
+            tool_calls = getattr(raw, "tool_calls", None) or []
+            args = tool_calls[0].get("args") if tool_calls else None
+            if not args:
+                error = result.get("parsing_error")
+                raise error if error else ValueError("路由模型返回空结果")
+            repaired = self._repair_route_payload(args)
+            if repaired != args:
+                self.route_repair_count += 1
+            return RouteDecision.model_validate(repaired)
+        if isinstance(result, dict):
+            return RouteDecision.model_validate(self._repair_route_payload(result))
+        return RouteDecision.model_validate(result)
+
+    @staticmethod
     def _is_province_only(value: str) -> bool:
         compact = value.strip()
         for suffix in ("壮族自治区", "回族自治区", "维吾尔自治区", "自治区", "省"):
@@ -382,12 +470,7 @@ class AgriGraphAgent:
         last_error: Exception | None = None
         for attempt in range(self.ROUTER_RETRIES + 1):
             try:
-                decision = self.router.invoke(messages)
-                if decision is None:
-                    raise ValueError("路由模型返回空结果")
-                if not isinstance(decision, RouteDecision):
-                    decision = RouteDecision.model_validate(decision)
-                return decision
+                return self._coerce_route_decision(self.router.invoke(messages))
             except Exception as exc:
                 last_error = exc
                 if attempt < self.ROUTER_RETRIES:

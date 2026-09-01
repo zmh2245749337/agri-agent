@@ -1,0 +1,203 @@
+{"query": "有点搞不懂", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0001"}
+{"query": "黄瓜和水稻能不能轮作", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0002"}
+{"query": "我家的茄子叶片自下而上发黄萎蔫，是怎么回事", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0003"}
+{"query": "蔬菜和水稻能不能轮作", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0004"}
+{"query": "我在湖南省种生猪，种粮补贴的条件是什么", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0005"}
+{"query": "我这边有点情况", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0006"}
+{"query": "我的葡萄叶片和果实有褐色小斑边缘紫褐，呼和浩特明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0007"}
+{"query": "现在适合种棉花吗", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0008"}
+{"query": "我的水稻叶片卷成苞状，哈尔滨明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0009"}
+{"query": "这样行不行", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0010"}
+{"query": "贵阳明天会下雨吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0011"}
+{"query": "白菜的生长周期是多久", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0012"}
+{"query": "柑橘新梢发黄，要怎么处理", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0013"}
+{"query": "南京这几天天气怎么样", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0014"}
+{"query": "嗯……", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0015"}
+{"query": "西安这周适合灌溉吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0016"}
+{"query": "我在吉林省种茶叶，补贴怎么申请", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0017"}
+{"query": "奶牛和水稻能不能轮作", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0018"}
+{"query": "我在广东省广州种柑橘，最近叶片和果实有木栓状隆起斑，帮我理一下下一步怎么做", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0019"}
+{"query": "葡萄一般什么时候播种比较好", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0020"}
+{"query": "我在甘肃省兰州种水稻，最近叶片有褐色斑点，帮我理一下下一步怎么做", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0021"}
+{"query": "我的玉米果穗变成黑粉包，南京明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0022"}
+{"query": "再见", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_smalltalk", "source": "template", "id": "main_0023"}
+{"query": "水稻适合什么样的土壤", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0024"}
+{"query": "现在适合种辣椒吗", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0025"}
+{"query": "我在黑龙江省哈尔滨种大豆，最近叶片花斑皱缩，帮我规划一下这几天该干什么", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0026"}
+{"query": "武汉接下来三天有雨吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0027"}
+{"query": "我在辽宁省沈阳种水稻，最近秧苗徒长细高，帮我理一下下一步怎么做", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0028"}
+{"query": "帮我看看", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0029"}
+{"query": "奶牛和玉米哪个更耐旱", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0030"}
+{"query": "我在吉林省种茶叶，农机购置补贴怎么算", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0031"}
+{"query": "棉花适合什么样的土壤", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0032"}
+{"query": "南昌后天气温多少", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0033"}
+{"query": "我在黑龙江省哈尔滨种茶叶，最近叶片有水泡状凸起，能不能出个完整的处理计划", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0034"}
+{"query": "我的茄子果实表面有白色霉层，济南明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0035"}
+{"query": "长沙这周适合灌溉吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0036"}
+{"query": "在忙吗", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0037"}
+{"query": "辛苦了", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_smalltalk", "source": "template", "id": "main_0038"}
+{"query": "我的辣椒茎基部有水浸状病斑，呼和浩特明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0039"}
+{"query": "我在河南省种大豆，能申请哪些补贴", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0040"}
+{"query": "说来话长", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0041"}
+{"query": "西安最近有没有大风", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0042"}
+{"query": "我的白菜根部长成瘤状，武汉明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0043"}
+{"query": "我的柑橘叶片或果实有黑褐色病斑，兰州明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0044"}
+{"query": "南宁这几天天气怎么样", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0045"}
+{"query": "现在适合种中药材吗", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0046"}
+{"query": "刚遇到个事", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0047"}
+{"query": "我家的柑橘叶片或果实有黑褐色病斑，是怎么回事", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0048"}
+{"query": "油菜的生长周期是多久", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0049"}
+{"query": "油菜怎么施肥比较合理", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0050"}
+{"query": "肉牛和玉米哪个更耐旱", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0051"}
+{"query": "马铃薯一亩地大概要多少种子", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0052"}
+{"query": "大豆根部变褐腐烂，要怎么处理", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0053"}
+{"query": "新手种大豆要注意什么", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0054"}
+{"query": "茶叶亩产大概多少", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0055"}
+{"query": "我的玉米果穗变成黑粉包，乌鲁木齐明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0056"}
+{"query": "我家的大豆根部变褐腐烂，是怎么回事", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0057"}
+{"query": "我的香蕉新叶密集丛生直立，哈尔滨明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0058"}
+{"query": "我在湖北省武汉种白菜，最近叶片正面黄色病斑，给我一份种植方案", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0059"}
+{"query": "你都有哪些功能", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_smalltalk", "source": "template", "id": "main_0060"}
+{"query": "种的黄瓜最近叶片正面有黄色多角斑，帮我看看什么原因", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0061"}
+{"query": "你是怎么工作的", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_smalltalk", "source": "template", "id": "main_0062"}
+{"query": "我家的柑橘新梢发黄，是怎么回事", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0063"}
+{"query": "小麦亩产大概多少", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0064"}
+{"query": "有空吗", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0065"}
+{"query": "白菜叶片正面黄色病斑，要怎么处理", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0066"}
+{"query": "玉米叶片有圆形褐斑中间灰白，要怎么处理", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0067"}
+{"query": "我在山东省济南种香蕉，最近叶片自下而上黄化萎蔫，帮我理一下下一步怎么做", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0068"}
+{"query": "打扰一下", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0069"}
+{"query": "黄瓜叶片正面有黄色多角斑，要怎么处理", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0070"}
+{"query": "小麦和水稻能不能轮作", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0071"}
+{"query": "我在山西省种糖料蔗，农机购置补贴怎么算", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0072"}
+{"query": "现在适合种茄子吗", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0073"}
+{"query": "蔬菜一亩地大概要多少种子", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0074"}
+{"query": "能不能帮个忙", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0075"}
+{"query": "我在新疆维吾尔自治区种苹果，有没有扶持政策", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0076"}
+{"query": "辣椒一亩地大概要多少种子", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0077"}
+{"query": "种的大豆最近根部变褐腐烂，帮我看看什么原因", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0078"}
+{"query": "长沙明天适合打药吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0079"}
+{"query": "新手种辣椒要注意什么", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0080"}
+{"query": "有点问题", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0081"}
+{"query": "我家的黄瓜叶片正面有黄色多角斑，是怎么回事", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0082"}
+{"query": "种的玉米最近叶片有圆形褐斑中间灰白，帮我看看什么原因", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0083"}
+{"query": "我在新疆维吾尔自治区种苹果，有什么种植补贴", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0084"}
+{"query": "这情况正常吗", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0085"}
+{"query": "我在江苏省种花生，种粮补贴的条件是什么", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0086"}
+{"query": "我拿不准", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0087"}
+{"query": "谢谢你", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_smalltalk", "source": "template", "id": "main_0088"}
+{"query": "小麦一般什么时候播种比较好", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0089"}
+{"query": "哈尔滨这周适合灌溉吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0090"}
+{"query": "生猪和水稻能不能轮作", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0091"}
+{"query": "肉牛的生长周期是多久", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0092"}
+{"query": "种的白菜最近叶片正面黄色病斑，帮我看看什么原因", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0093"}
+{"query": "广州这周适合灌溉吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0094"}
+{"query": "葡萄亩产大概多少", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0095"}
+{"query": "番茄怎么施肥比较合理", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0096"}
+{"query": "我在新疆维吾尔自治区乌鲁木齐种茄子，最近叶片自下而上发黄萎蔫，给我一份种植方案", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0097"}
+{"query": "帮忙分析下", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0098"}
+{"query": "麻烦了", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0099"}
+{"query": "种的柑橘最近叶片或果实有黑褐色病斑，帮我看看什么原因", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0100"}
+{"query": "种的茄子最近叶片自下而上发黄萎蔫，帮我看看什么原因", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0101"}
+{"query": "中药材适合什么样的土壤", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0102"}
+{"query": "现在适合种肉牛吗", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0103"}
+{"query": "我在湖南省种生猪，能申请哪些补贴", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0104"}
+{"query": "新手种葡萄要注意什么", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0105"}
+{"query": "合肥明天会下雨吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0106"}
+{"query": "我在云南省昆明种蔬菜，最近幼苗猝倒，帮我规划一下这几天该干什么", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0107"}
+{"query": "茄子叶片自下而上发黄萎蔫，要怎么处理", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0108"}
+{"query": "早籼稻怎么施肥比较合理", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0109"}
+{"query": "中药材一般什么时候播种比较好", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0110"}
+{"query": "种的柑橘最近新梢发黄，帮我看看什么原因", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0111"}
+{"query": "你能帮我做什么", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_smalltalk", "source": "template", "id": "main_0112"}
+{"query": "我在吉林省长春种柑橘，最近新梢发黄，能不能出个完整的处理计划", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0113"}
+{"query": "我家的茶叶叶片有水泡状凸起，是怎么回事", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0114"}
+{"query": "苹果适合什么样的土壤", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0115"}
+{"query": "水稻叶片卷成苞状，要怎么处理", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0116"}
+{"query": "我的苹果果实有同心轮纹状病斑，乌鲁木齐明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0117"}
+{"query": "我在山东省种棉花，种粮补贴的条件是什么", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0118"}
+{"query": "玉米怎么施肥比较合理", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0119"}
+{"query": "糖料蔗适合什么样的土壤", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0120"}
+{"query": "想咨询一下", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0121"}
+{"query": "我想问点事", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0122"}
+{"query": "我在四川省成都种大豆，最近叶背聚集小虫，帮我理一下下一步怎么做", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0123"}
+{"query": "种的茶叶最近叶片有水泡状凸起，帮我看看什么原因", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0124"}
+{"query": "茄子一般什么时候播种比较好", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0125"}
+{"query": "我的黄瓜叶片表面有白色粉状物，呼和浩特明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0126"}
+{"query": "我在江苏省南京种番茄，最近叶片花叶皱缩，帮我做个接下来的安排", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0127"}
+{"query": "黄瓜和玉米哪个更耐旱", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0128"}
+{"query": "我在河南省种大豆，有什么种植补贴", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0129"}
+{"query": "水稻的生长周期是多久", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0130"}
+{"query": "我在山西省种糖料蔗，有没有扶持政策", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0131"}
+{"query": "我在海南省种早籼稻，能申请哪些补贴", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0132"}
+{"query": "我的马铃薯叶片有水浸状暗绿斑，济南明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0133"}
+{"query": "我在山东省种棉花，有没有扶持政策", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0134"}
+{"query": "我家的白菜叶片正面黄色病斑，是怎么回事", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0135"}
+{"query": "我在云南省昆明种辣椒，最近茎基部有水浸状病斑，帮我做个接下来的安排", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0136"}
+{"query": "水稻亩产大概多少", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0137"}
+{"query": "马铃薯怎么施肥比较合理", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0138"}
+{"query": "茶叶叶片有水泡状凸起，要怎么处理", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0139"}
+{"query": "我的黄瓜叶片表面有白色粉状物，南昌明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0140"}
+{"query": "番茄的生长周期是多久", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0141"}
+{"query": "我在辽宁省沈阳种柑橘，最近叶片或果实有黑褐色病斑，给我一份种植方案", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0142"}
+{"query": "我的花生荚果被咬食有缺口，南京明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0143"}
+{"query": "种的水稻最近叶片卷成苞状，帮我看看什么原因", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0144"}
+{"query": "合肥这几天天气怎么样", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0145"}
+{"query": "新手种白菜要注意什么", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0146"}
+{"query": "广州后天气温多少", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0147"}
+{"query": "你好", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_smalltalk", "source": "template", "id": "main_0148"}
+{"query": "哈尔滨最近有没有大风", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0149"}
+{"query": "我在广西壮族自治区南宁种水稻，最近秧苗心叶发白卷曲，帮我理一下下一步怎么做", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0150"}
+{"query": "看一下呢", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0151"}
+{"query": "南京后天气温多少", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0152"}
+{"query": "棉花怎么施肥比较合理", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0153"}
+{"query": "我在广西壮族自治区种油菜，种粮补贴的条件是什么", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0154"}
+{"query": "我在广西壮族自治区种油菜，农机购置补贴怎么算", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0155"}
+{"query": "我这个情况", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0156"}
+{"query": "花生的生长周期是多久", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0157"}
+{"query": "甘蔗和水稻能不能轮作", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0158"}
+{"query": "花生和玉米哪个更耐旱", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0159"}
+{"query": "好的，我知道了", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_smalltalk", "source": "template", "id": "main_0160"}
+{"query": "我在四川省种马铃薯，有没有扶持政策", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0161"}
+{"query": "油菜一般什么时候播种比较好", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0162"}
+{"query": "你帮我处理一下", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0163"}
+{"query": "我在广西壮族自治区南宁种马铃薯，最近薯块切开维管束环状变褐，帮我理一下下一步怎么做", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0164"}
+{"query": "成都这周适合灌溉吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0165"}
+{"query": "香蕉亩产大概多少", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0166"}
+{"query": "这个怎么办", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0167"}
+{"query": "贵阳明天能不能收割", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0168"}
+{"query": "我家的水稻叶片卷成苞状，是怎么回事", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0169"}
+{"query": "中药材一亩地大概要多少种子", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0170"}
+{"query": "该怎么弄", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0171"}
+{"query": "现在适合种荔枝吗", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0172"}
+{"query": "成都明天能不能收割", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0173"}
+{"query": "我在四川省种马铃薯，有什么种植补贴", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0174"}
+{"query": "有人吗", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0175"}
+{"query": "荔枝一亩地大概要多少种子", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0176"}
+{"query": "新手种油菜要注意什么", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0177"}
+{"query": "奶牛适合什么样的土壤", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0178"}
+{"query": "我家的玉米叶片有圆形褐斑中间灰白，是怎么回事", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0179"}
+{"query": "长春明天适合打药吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0180"}
+{"query": "早籼稻亩产大概多少", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0181"}
+{"query": "大豆和玉米哪个更耐旱", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0182"}
+{"query": "我的黄瓜植株逐渐萎蔫，哈尔滨明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0183"}
+{"query": "我的柑橘叶片有灰白斑点，长春明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0184"}
+{"query": "我的番茄果实底部有凹陷黑斑，长沙明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0185"}
+{"query": "水稻一般什么时候播种比较好", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0186"}
+{"query": "你看看呢", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0187"}
+{"query": "我在江苏省种花生，有没有扶持政策", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0188"}
+{"query": "南宁最近有没有大风", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0189"}
+{"query": "武汉最近有没有大风", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0190"}
+{"query": "柑橘叶片或果实有黑褐色病斑，要怎么处理", "expect_route": "react", "expect_capabilities": ["diagnosis"], "kind": "react_diagnosis", "source": "template", "id": "main_0191"}
+{"query": "南昌这周适合灌溉吗", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0192"}
+{"query": "我的柑橘叶片和果实有木栓状隆起斑，哈尔滨明天的天气也帮我看一下", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather"], "kind": "planning_multi_capability", "source": "template", "id": "main_0193"}
+{"query": "在吗", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0194"}
+{"query": "番茄和玉米哪个更耐旱", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0195"}
+{"query": "柑橘一亩地大概要多少种子", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0196"}
+{"query": "长春后天气温多少", "expect_route": "react", "expect_capabilities": ["weather"], "kind": "react_weather", "source": "template", "id": "main_0197"}
+{"query": "想问问", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0198"}
+{"query": "新手种苹果要注意什么", "expect_route": "direct", "expect_capabilities": [], "kind": "direct_agronomy", "source": "template", "id": "main_0199"}
+{"query": "我在海南省种早籼稻，补贴怎么申请", "expect_route": "react", "expect_capabilities": ["policy"], "kind": "react_policy", "source": "template", "id": "main_0200"}
+{"query": "我在安徽省合肥种玉米，最近叶片有椭圆形褐斑，帮我规划一下这几天该干什么", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0201"}
+{"query": "我在新疆维吾尔自治区乌鲁木齐种水稻，最近叶尖发白干枯，帮我理一下下一步怎么做", "expect_route": "planning", "expect_capabilities": ["diagnosis", "weather", "policy"], "kind": "planning_explicit", "source": "template", "id": "main_0202"}
+{"query": "有个事想请教", "expect_route": "clarify", "expect_capabilities": [], "kind": "clarify_vague", "source": "template", "id": "main_0203"}

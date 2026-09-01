@@ -1,0 +1,4010 @@
+{
+  "summary": {
+    "samples": 203,
+    "route_accuracy": 0.8374,
+    "route_accuracy_excl_fallback": 0.8268,
+    "fallback_free_samples": 179,
+    "per_route_accuracy": {
+      "direct": {
+        "n": 68,
+        "accuracy": 1.0
+      },
+      "react": {
+        "n": 71,
+        "accuracy": 0.9014
+      },
+      "planning": {
+        "n": 36,
+        "accuracy": 0.5278
+      },
+      "clarify": {
+        "n": 28,
+        "accuracy": 0.6786
+      }
+    },
+    "confusion_matrix": {
+      "clarify": {
+        "direct": 9,
+        "clarify": 19
+      },
+      "direct": {
+        "direct": 68
+      },
+      "react": {
+        "clarify": 7,
+        "react": 64
+      },
+      "planning": {
+        "planning": 19,
+        "react": 15,
+        "clarify": 2
+      }
+    },
+    "capability_precision": 1.0,
+    "capability_recall": 0.7826,
+    "capability_f1": 0.878,
+    "capability_exact_rate": 0.9113,
+    "no_capability_turns": 96,
+    "false_trigger_count": 0,
+    "false_trigger_rate": 0.0,
+    "fallback_hits": 24,
+    "fallback_reasons": [],
+    "error_count": 0,
+    "avg_latency_s": 1.957,
+    "router_retries": 0
+  },
+  "records": [
+    {
+      "id": "main_0001",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "有点搞不懂",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.312,
+      "error": null
+    },
+    {
+      "id": "main_0002",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "黄瓜和水稻能不能轮作",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.969,
+      "error": null
+    },
+    {
+      "id": "main_0003",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "我家的茄子叶片自下而上发黄萎蔫，是怎么回事",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.046,
+      "error": null
+    },
+    {
+      "id": "main_0004",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "蔬菜和水稻能不能轮作",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.771,
+      "error": null
+    },
+    {
+      "id": "main_0005",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在湖南省种生猪，种粮补贴的条件是什么",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.355,
+      "error": null
+    },
+    {
+      "id": "main_0006",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "我这边有点情况",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.643,
+      "error": null
+    },
+    {
+      "id": "main_0007",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的葡萄叶片和果实有褐色小斑边缘紫褐，呼和浩特明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.804,
+      "error": null
+    },
+    {
+      "id": "main_0008",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "现在适合种棉花吗",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.257,
+      "error": null
+    },
+    {
+      "id": "main_0009",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的水稻叶片卷成苞状，哈尔滨明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.818,
+      "error": null
+    },
+    {
+      "id": "main_0010",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "这样行不行",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.853,
+      "error": null
+    },
+    {
+      "id": "main_0011",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "贵阳明天会下雨吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.483,
+      "error": null
+    },
+    {
+      "id": "main_0012",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "白菜的生长周期是多久",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 3.968,
+      "error": null
+    },
+    {
+      "id": "main_0013",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "柑橘新梢发黄，要怎么处理",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.175,
+      "error": null
+    },
+    {
+      "id": "main_0014",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "南京这几天天气怎么样",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.056,
+      "error": null
+    },
+    {
+      "id": "main_0015",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "嗯……",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.612,
+      "error": null
+    },
+    {
+      "id": "main_0016",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "西安这周适合灌溉吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.199,
+      "error": null
+    },
+    {
+      "id": "main_0017",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在吉林省种茶叶，补贴怎么申请",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 2.176,
+      "error": null
+    },
+    {
+      "id": "main_0018",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "奶牛和水稻能不能轮作",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.763,
+      "error": null
+    },
+    {
+      "id": "main_0019",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在广东省广州种柑橘，最近叶片和果实有木栓状隆起斑，帮我理一下下一步怎么做",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.449,
+      "error": null
+    },
+    {
+      "id": "main_0020",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "葡萄一般什么时候播种比较好",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.136,
+      "error": null
+    },
+    {
+      "id": "main_0021",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在甘肃省兰州种水稻，最近叶片有褐色斑点，帮我理一下下一步怎么做",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.772,
+      "error": null
+    },
+    {
+      "id": "main_0022",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的玉米果穗变成黑粉包，南京明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.989,
+      "error": null
+    },
+    {
+      "id": "main_0023",
+      "kind": "direct_smalltalk",
+      "source": "template",
+      "query": "再见",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.583,
+      "error": null
+    },
+    {
+      "id": "main_0024",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "水稻适合什么样的土壤",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 4.41,
+      "error": null
+    },
+    {
+      "id": "main_0025",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "现在适合种辣椒吗",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.144,
+      "error": null
+    },
+    {
+      "id": "main_0026",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在黑龙江省哈尔滨种大豆，最近叶片花斑皱缩，帮我规划一下这几天该干什么",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.413,
+      "error": null
+    },
+    {
+      "id": "main_0027",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "武汉接下来三天有雨吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.393,
+      "error": null
+    },
+    {
+      "id": "main_0028",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在辽宁省沈阳种水稻，最近秧苗徒长细高，帮我理一下下一步怎么做",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.959,
+      "error": null
+    },
+    {
+      "id": "main_0029",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "帮我看看",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.658,
+      "error": null
+    },
+    {
+      "id": "main_0030",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "奶牛和玉米哪个更耐旱",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 4.779,
+      "error": null
+    },
+    {
+      "id": "main_0031",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在吉林省种茶叶，农机购置补贴怎么算",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.638,
+      "error": null
+    },
+    {
+      "id": "main_0032",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "棉花适合什么样的土壤",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 4.697,
+      "error": null
+    },
+    {
+      "id": "main_0033",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "南昌后天气温多少",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.553,
+      "error": null
+    },
+    {
+      "id": "main_0034",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在黑龙江省哈尔滨种茶叶，最近叶片有水泡状凸起，能不能出个完整的处理计划",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.778,
+      "error": null
+    },
+    {
+      "id": "main_0035",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的茄子果实表面有白色霉层，济南明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.73,
+      "error": null
+    },
+    {
+      "id": "main_0036",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "长沙这周适合灌溉吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.011,
+      "error": null
+    },
+    {
+      "id": "main_0037",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "在忙吗",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.638,
+      "error": null
+    },
+    {
+      "id": "main_0038",
+      "kind": "direct_smalltalk",
+      "source": "template",
+      "query": "辛苦了",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.443,
+      "error": null
+    },
+    {
+      "id": "main_0039",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的辣椒茎基部有水浸状病斑，呼和浩特明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.936,
+      "error": null
+    },
+    {
+      "id": "main_0040",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在河南省种大豆，能申请哪些补贴",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.994,
+      "error": null
+    },
+    {
+      "id": "main_0041",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "说来话长",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.618,
+      "error": null
+    },
+    {
+      "id": "main_0042",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "西安最近有没有大风",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.14,
+      "error": null
+    },
+    {
+      "id": "main_0043",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的白菜根部长成瘤状，武汉明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.588,
+      "error": null
+    },
+    {
+      "id": "main_0044",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的柑橘叶片或果实有黑褐色病斑，兰州明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 4.201,
+      "error": null
+    },
+    {
+      "id": "main_0045",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "南宁这几天天气怎么样",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.41,
+      "error": null
+    },
+    {
+      "id": "main_0046",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "现在适合种中药材吗",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.982,
+      "error": null
+    },
+    {
+      "id": "main_0047",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "刚遇到个事",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.809,
+      "error": null
+    },
+    {
+      "id": "main_0048",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "我家的柑橘叶片或果实有黑褐色病斑，是怎么回事",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.129,
+      "error": null
+    },
+    {
+      "id": "main_0049",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "油菜的生长周期是多久",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 4.088,
+      "error": null
+    },
+    {
+      "id": "main_0050",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "油菜怎么施肥比较合理",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.599,
+      "error": null
+    },
+    {
+      "id": "main_0051",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "肉牛和玉米哪个更耐旱",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.087,
+      "error": null
+    },
+    {
+      "id": "main_0052",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "马铃薯一亩地大概要多少种子",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.165,
+      "error": null
+    },
+    {
+      "id": "main_0053",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "大豆根部变褐腐烂，要怎么处理",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.232,
+      "error": null
+    },
+    {
+      "id": "main_0054",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "新手种大豆要注意什么",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.717,
+      "error": null
+    },
+    {
+      "id": "main_0055",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "茶叶亩产大概多少",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.281,
+      "error": null
+    },
+    {
+      "id": "main_0056",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的玉米果穗变成黑粉包，乌鲁木齐明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.682,
+      "error": null
+    },
+    {
+      "id": "main_0057",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "我家的大豆根部变褐腐烂，是怎么回事",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.432,
+      "error": null
+    },
+    {
+      "id": "main_0058",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的香蕉新叶密集丛生直立，哈尔滨明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.691,
+      "error": null
+    },
+    {
+      "id": "main_0059",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在湖北省武汉种白菜，最近叶片正面黄色病斑，给我一份种植方案",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.883,
+      "error": null
+    },
+    {
+      "id": "main_0060",
+      "kind": "direct_smalltalk",
+      "source": "template",
+      "query": "你都有哪些功能",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 4.684,
+      "error": null
+    },
+    {
+      "id": "main_0061",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "种的黄瓜最近叶片正面有黄色多角斑，帮我看看什么原因",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.073,
+      "error": null
+    },
+    {
+      "id": "main_0062",
+      "kind": "direct_smalltalk",
+      "source": "template",
+      "query": "你是怎么工作的",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 4.677,
+      "error": null
+    },
+    {
+      "id": "main_0063",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "我家的柑橘新梢发黄，是怎么回事",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.006,
+      "error": null
+    },
+    {
+      "id": "main_0064",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "小麦亩产大概多少",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 2.436,
+      "error": null
+    },
+    {
+      "id": "main_0065",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "有空吗",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.569,
+      "error": null
+    },
+    {
+      "id": "main_0066",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "白菜叶片正面黄色病斑，要怎么处理",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.179,
+      "error": null
+    },
+    {
+      "id": "main_0067",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "玉米叶片有圆形褐斑中间灰白，要怎么处理",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.243,
+      "error": null
+    },
+    {
+      "id": "main_0068",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在山东省济南种香蕉，最近叶片自下而上黄化萎蔫，帮我理一下下一步怎么做",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.77,
+      "error": null
+    },
+    {
+      "id": "main_0069",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "打扰一下",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.658,
+      "error": null
+    },
+    {
+      "id": "main_0070",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "黄瓜叶片正面有黄色多角斑，要怎么处理",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.233,
+      "error": null
+    },
+    {
+      "id": "main_0071",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "小麦和水稻能不能轮作",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.641,
+      "error": null
+    },
+    {
+      "id": "main_0072",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在山西省种糖料蔗，农机购置补贴怎么算",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.553,
+      "error": null
+    },
+    {
+      "id": "main_0073",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "现在适合种茄子吗",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.074,
+      "error": null
+    },
+    {
+      "id": "main_0074",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "蔬菜一亩地大概要多少种子",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.268,
+      "error": null
+    },
+    {
+      "id": "main_0075",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "能不能帮个忙",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.654,
+      "error": null
+    },
+    {
+      "id": "main_0076",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在新疆维吾尔自治区种苹果，有没有扶持政策",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 0.991,
+      "error": null
+    },
+    {
+      "id": "main_0077",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "辣椒一亩地大概要多少种子",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.95,
+      "error": null
+    },
+    {
+      "id": "main_0078",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "种的大豆最近根部变褐腐烂，帮我看看什么原因",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.992,
+      "error": null
+    },
+    {
+      "id": "main_0079",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "长沙明天适合打药吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.514,
+      "error": null
+    },
+    {
+      "id": "main_0080",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "新手种辣椒要注意什么",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.131,
+      "error": null
+    },
+    {
+      "id": "main_0081",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "有点问题",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.588,
+      "error": null
+    },
+    {
+      "id": "main_0082",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "我家的黄瓜叶片正面有黄色多角斑，是怎么回事",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.825,
+      "error": null
+    },
+    {
+      "id": "main_0083",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "种的玉米最近叶片有圆形褐斑中间灰白，帮我看看什么原因",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.4,
+      "error": null
+    },
+    {
+      "id": "main_0084",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在新疆维吾尔自治区种苹果，有什么种植补贴",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.735,
+      "error": null
+    },
+    {
+      "id": "main_0085",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "这情况正常吗",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 5.371,
+      "error": null
+    },
+    {
+      "id": "main_0086",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在江苏省种花生，种粮补贴的条件是什么",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 2.33,
+      "error": null
+    },
+    {
+      "id": "main_0087",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "我拿不准",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.863,
+      "error": null
+    },
+    {
+      "id": "main_0088",
+      "kind": "direct_smalltalk",
+      "source": "template",
+      "query": "谢谢你",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 3.744,
+      "error": null
+    },
+    {
+      "id": "main_0089",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "小麦一般什么时候播种比较好",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 6.287,
+      "error": null
+    },
+    {
+      "id": "main_0090",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "哈尔滨这周适合灌溉吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.188,
+      "error": null
+    },
+    {
+      "id": "main_0091",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "生猪和水稻能不能轮作",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.927,
+      "error": null
+    },
+    {
+      "id": "main_0092",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "肉牛的生长周期是多久",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.436,
+      "error": null
+    },
+    {
+      "id": "main_0093",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "种的白菜最近叶片正面黄色病斑，帮我看看什么原因",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.502,
+      "error": null
+    },
+    {
+      "id": "main_0094",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "广州这周适合灌溉吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.642,
+      "error": null
+    },
+    {
+      "id": "main_0095",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "葡萄亩产大概多少",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 3.604,
+      "error": null
+    },
+    {
+      "id": "main_0096",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "番茄怎么施肥比较合理",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.873,
+      "error": null
+    },
+    {
+      "id": "main_0097",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在新疆维吾尔自治区乌鲁木齐种茄子，最近叶片自下而上发黄萎蔫，给我一份种植方案",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.914,
+      "error": null
+    },
+    {
+      "id": "main_0098",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "帮忙分析下",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.774,
+      "error": null
+    },
+    {
+      "id": "main_0099",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "麻烦了",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.466,
+      "error": null
+    },
+    {
+      "id": "main_0100",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "种的柑橘最近叶片或果实有黑褐色病斑，帮我看看什么原因",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.021,
+      "error": null
+    },
+    {
+      "id": "main_0101",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "种的茄子最近叶片自下而上发黄萎蔫，帮我看看什么原因",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.082,
+      "error": null
+    },
+    {
+      "id": "main_0102",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "中药材适合什么样的土壤",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.796,
+      "error": null
+    },
+    {
+      "id": "main_0103",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "现在适合种肉牛吗",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.156,
+      "error": null
+    },
+    {
+      "id": "main_0104",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在湖南省种生猪，能申请哪些补贴",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.563,
+      "error": null
+    },
+    {
+      "id": "main_0105",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "新手种葡萄要注意什么",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.042,
+      "error": null
+    },
+    {
+      "id": "main_0106",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "合肥明天会下雨吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.279,
+      "error": null
+    },
+    {
+      "id": "main_0107",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在云南省昆明种蔬菜，最近幼苗猝倒，帮我规划一下这几天该干什么",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 2.166,
+      "error": null
+    },
+    {
+      "id": "main_0108",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "茄子叶片自下而上发黄萎蔫，要怎么处理",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.016,
+      "error": null
+    },
+    {
+      "id": "main_0109",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "早籼稻怎么施肥比较合理",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.399,
+      "error": null
+    },
+    {
+      "id": "main_0110",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "中药材一般什么时候播种比较好",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.022,
+      "error": null
+    },
+    {
+      "id": "main_0111",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "种的柑橘最近新梢发黄，帮我看看什么原因",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.017,
+      "error": null
+    },
+    {
+      "id": "main_0112",
+      "kind": "direct_smalltalk",
+      "source": "template",
+      "query": "你能帮我做什么",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.639,
+      "error": null
+    },
+    {
+      "id": "main_0113",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在吉林省长春种柑橘，最近新梢发黄，能不能出个完整的处理计划",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.655,
+      "error": null
+    },
+    {
+      "id": "main_0114",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "我家的茶叶叶片有水泡状凸起，是怎么回事",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.958,
+      "error": null
+    },
+    {
+      "id": "main_0115",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "苹果适合什么样的土壤",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.59,
+      "error": null
+    },
+    {
+      "id": "main_0116",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "水稻叶片卷成苞状，要怎么处理",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.162,
+      "error": null
+    },
+    {
+      "id": "main_0117",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的苹果果实有同心轮纹状病斑，乌鲁木齐明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.556,
+      "error": null
+    },
+    {
+      "id": "main_0118",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在山东省种棉花，种粮补贴的条件是什么",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 2.213,
+      "error": null
+    },
+    {
+      "id": "main_0119",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "玉米怎么施肥比较合理",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.78,
+      "error": null
+    },
+    {
+      "id": "main_0120",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "糖料蔗适合什么样的土壤",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.856,
+      "error": null
+    },
+    {
+      "id": "main_0121",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "想咨询一下",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.625,
+      "error": null
+    },
+    {
+      "id": "main_0122",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "我想问点事",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.608,
+      "error": null
+    },
+    {
+      "id": "main_0123",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在四川省成都种大豆，最近叶背聚集小虫，帮我理一下下一步怎么做",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 2.225,
+      "error": null
+    },
+    {
+      "id": "main_0124",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "种的茶叶最近叶片有水泡状凸起，帮我看看什么原因",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.071,
+      "error": null
+    },
+    {
+      "id": "main_0125",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "茄子一般什么时候播种比较好",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.094,
+      "error": null
+    },
+    {
+      "id": "main_0126",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的黄瓜叶片表面有白色粉状物，呼和浩特明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.964,
+      "error": null
+    },
+    {
+      "id": "main_0127",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在江苏省南京种番茄，最近叶片花叶皱缩，帮我做个接下来的安排",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.668,
+      "error": null
+    },
+    {
+      "id": "main_0128",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "黄瓜和玉米哪个更耐旱",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 4.884,
+      "error": null
+    },
+    {
+      "id": "main_0129",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在河南省种大豆，有什么种植补贴",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.774,
+      "error": null
+    },
+    {
+      "id": "main_0130",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "水稻的生长周期是多久",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 4.708,
+      "error": null
+    },
+    {
+      "id": "main_0131",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在山西省种糖料蔗，有没有扶持政策",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 2.075,
+      "error": null
+    },
+    {
+      "id": "main_0132",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在海南省种早籼稻，能申请哪些补贴",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 2.152,
+      "error": null
+    },
+    {
+      "id": "main_0133",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的马铃薯叶片有水浸状暗绿斑，济南明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.297,
+      "error": null
+    },
+    {
+      "id": "main_0134",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在山东省种棉花，有没有扶持政策",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 0.848,
+      "error": null
+    },
+    {
+      "id": "main_0135",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "我家的白菜叶片正面黄色病斑，是怎么回事",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.304,
+      "error": null
+    },
+    {
+      "id": "main_0136",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在云南省昆明种辣椒，最近茎基部有水浸状病斑，帮我做个接下来的安排",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.894,
+      "error": null
+    },
+    {
+      "id": "main_0137",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "水稻亩产大概多少",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 6.272,
+      "error": null
+    },
+    {
+      "id": "main_0138",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "马铃薯怎么施肥比较合理",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 2.06,
+      "error": null
+    },
+    {
+      "id": "main_0139",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "茶叶叶片有水泡状凸起，要怎么处理",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.057,
+      "error": null
+    },
+    {
+      "id": "main_0140",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的黄瓜叶片表面有白色粉状物，南昌明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 2.465,
+      "error": null
+    },
+    {
+      "id": "main_0141",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "番茄的生长周期是多久",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.368,
+      "error": null
+    },
+    {
+      "id": "main_0142",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在辽宁省沈阳种柑橘，最近叶片或果实有黑褐色病斑，给我一份种植方案",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.378,
+      "error": null
+    },
+    {
+      "id": "main_0143",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的花生荚果被咬食有缺口，南京明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 2.362,
+      "error": null
+    },
+    {
+      "id": "main_0144",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "种的水稻最近叶片卷成苞状，帮我看看什么原因",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.349,
+      "error": null
+    },
+    {
+      "id": "main_0145",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "合肥这几天天气怎么样",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 0.682,
+      "error": null
+    },
+    {
+      "id": "main_0146",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "新手种白菜要注意什么",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 4.108,
+      "error": null
+    },
+    {
+      "id": "main_0147",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "广州后天气温多少",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.449,
+      "error": null
+    },
+    {
+      "id": "main_0148",
+      "kind": "direct_smalltalk",
+      "source": "template",
+      "query": "你好",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.6,
+      "error": null
+    },
+    {
+      "id": "main_0149",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "哈尔滨最近有没有大风",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.446,
+      "error": null
+    },
+    {
+      "id": "main_0150",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在广西壮族自治区南宁种水稻，最近秧苗心叶发白卷曲，帮我理一下下一步怎么做",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.611,
+      "error": null
+    },
+    {
+      "id": "main_0151",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "看一下呢",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.583,
+      "error": null
+    },
+    {
+      "id": "main_0152",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "南京后天气温多少",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.288,
+      "error": null
+    },
+    {
+      "id": "main_0153",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "棉花怎么施肥比较合理",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.38,
+      "error": null
+    },
+    {
+      "id": "main_0154",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在广西壮族自治区种油菜，种粮补贴的条件是什么",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.694,
+      "error": null
+    },
+    {
+      "id": "main_0155",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在广西壮族自治区种油菜，农机购置补贴怎么算",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.643,
+      "error": null
+    },
+    {
+      "id": "main_0156",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "我这个情况",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.659,
+      "error": null
+    },
+    {
+      "id": "main_0157",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "花生的生长周期是多久",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.071,
+      "error": null
+    },
+    {
+      "id": "main_0158",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "甘蔗和水稻能不能轮作",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.442,
+      "error": null
+    },
+    {
+      "id": "main_0159",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "花生和玉米哪个更耐旱",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.813,
+      "error": null
+    },
+    {
+      "id": "main_0160",
+      "kind": "direct_smalltalk",
+      "source": "template",
+      "query": "好的，我知道了",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 0.788,
+      "error": null
+    },
+    {
+      "id": "main_0161",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在四川省种马铃薯，有没有扶持政策",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 2.814,
+      "error": null
+    },
+    {
+      "id": "main_0162",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "油菜一般什么时候播种比较好",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.374,
+      "error": null
+    },
+    {
+      "id": "main_0163",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "你帮我处理一下",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.588,
+      "error": null
+    },
+    {
+      "id": "main_0164",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在广西壮族自治区南宁种马铃薯，最近薯块切开维管束环状变褐，帮我理一下下一步怎么做",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.395,
+      "error": null
+    },
+    {
+      "id": "main_0165",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "成都这周适合灌溉吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.172,
+      "error": null
+    },
+    {
+      "id": "main_0166",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "香蕉亩产大概多少",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.883,
+      "error": null
+    },
+    {
+      "id": "main_0167",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "这个怎么办",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.64,
+      "error": null
+    },
+    {
+      "id": "main_0168",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "贵阳明天能不能收割",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 0.956,
+      "error": null
+    },
+    {
+      "id": "main_0169",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "我家的水稻叶片卷成苞状，是怎么回事",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.471,
+      "error": null
+    },
+    {
+      "id": "main_0170",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "中药材一亩地大概要多少种子",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.178,
+      "error": null
+    },
+    {
+      "id": "main_0171",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "该怎么弄",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.632,
+      "error": null
+    },
+    {
+      "id": "main_0172",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "现在适合种荔枝吗",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.241,
+      "error": null
+    },
+    {
+      "id": "main_0173",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "成都明天能不能收割",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 2.969,
+      "error": null
+    },
+    {
+      "id": "main_0174",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在四川省种马铃薯，有什么种植补贴",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 2.007,
+      "error": null
+    },
+    {
+      "id": "main_0175",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "有人吗",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.603,
+      "error": null
+    },
+    {
+      "id": "main_0176",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "荔枝一亩地大概要多少种子",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.957,
+      "error": null
+    },
+    {
+      "id": "main_0177",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "新手种油菜要注意什么",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.988,
+      "error": null
+    },
+    {
+      "id": "main_0178",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "奶牛适合什么样的土壤",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.564,
+      "error": null
+    },
+    {
+      "id": "main_0179",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "我家的玉米叶片有圆形褐斑中间灰白，是怎么回事",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "clarify",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.454,
+      "error": null
+    },
+    {
+      "id": "main_0180",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "长春明天适合打药吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.065,
+      "error": null
+    },
+    {
+      "id": "main_0181",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "早籼稻亩产大概多少",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.962,
+      "error": null
+    },
+    {
+      "id": "main_0182",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "大豆和玉米哪个更耐旱",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.629,
+      "error": null
+    },
+    {
+      "id": "main_0183",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的黄瓜植株逐渐萎蔫，哈尔滨明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.997,
+      "error": null
+    },
+    {
+      "id": "main_0184",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的柑橘叶片有灰白斑点，长春明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.881,
+      "error": null
+    },
+    {
+      "id": "main_0185",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的番茄果实底部有凹陷黑斑，长沙明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.746,
+      "error": null
+    },
+    {
+      "id": "main_0186",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "水稻一般什么时候播种比较好",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.639,
+      "error": null
+    },
+    {
+      "id": "main_0187",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "你看看呢",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.5,
+      "used_fallback": false,
+      "latency_s": 2.962,
+      "error": null
+    },
+    {
+      "id": "main_0188",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在江苏省种花生，有没有扶持政策",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.297,
+      "error": null
+    },
+    {
+      "id": "main_0189",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "南宁最近有没有大风",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.515,
+      "error": null
+    },
+    {
+      "id": "main_0190",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "武汉最近有没有大风",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 1.363,
+      "error": null
+    },
+    {
+      "id": "main_0191",
+      "kind": "react_diagnosis",
+      "source": "template",
+      "query": "柑橘叶片或果实有黑褐色病斑，要怎么处理",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.985,
+      "error": null
+    },
+    {
+      "id": "main_0192",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "南昌这周适合灌溉吗",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.248,
+      "error": null
+    },
+    {
+      "id": "main_0193",
+      "kind": "planning_multi_capability",
+      "source": "template",
+      "query": "我的柑橘叶片和果实有木栓状隆起斑，哈尔滨明天的天气也帮我看一下",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis",
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.993,
+      "error": null
+    },
+    {
+      "id": "main_0194",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "在吗",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": false,
+      "capabilities_exact": true,
+      "confidence": 1.0,
+      "used_fallback": false,
+      "latency_s": 2.032,
+      "error": null
+    },
+    {
+      "id": "main_0195",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "番茄和玉米哪个更耐旱",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.721,
+      "error": null
+    },
+    {
+      "id": "main_0196",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "柑橘一亩地大概要多少种子",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.9,
+      "used_fallback": false,
+      "latency_s": 1.777,
+      "error": null
+    },
+    {
+      "id": "main_0197",
+      "kind": "react_weather",
+      "source": "template",
+      "query": "长春后天气温多少",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "weather"
+      ],
+      "pred_capabilities": [
+        "weather"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.396,
+      "error": null
+    },
+    {
+      "id": "main_0198",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "想问问",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.742,
+      "error": null
+    },
+    {
+      "id": "main_0199",
+      "kind": "direct_agronomy",
+      "source": "template",
+      "query": "新手种苹果要注意什么",
+      "has_history": false,
+      "gold_route": "direct",
+      "pred_route": "direct",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.7,
+      "used_fallback": true,
+      "latency_s": 5.152,
+      "error": null
+    },
+    {
+      "id": "main_0200",
+      "kind": "react_policy",
+      "source": "template",
+      "query": "我在海南省种早籼稻，补贴怎么申请",
+      "has_history": false,
+      "gold_route": "react",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "policy"
+      ],
+      "pred_capabilities": [
+        "policy"
+      ],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.95,
+      "used_fallback": false,
+      "latency_s": 1.578,
+      "error": null
+    },
+    {
+      "id": "main_0201",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在安徽省合肥种玉米，最近叶片有椭圆形褐斑，帮我规划一下这几天该干什么",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "planning",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": true,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.528,
+      "error": null
+    },
+    {
+      "id": "main_0202",
+      "kind": "planning_explicit",
+      "source": "template",
+      "query": "我在新疆维吾尔自治区乌鲁木齐种水稻，最近叶尖发白干枯，帮我理一下下一步怎么做",
+      "has_history": false,
+      "gold_route": "planning",
+      "pred_route": "react",
+      "gold_capabilities": [
+        "diagnosis",
+        "policy",
+        "weather"
+      ],
+      "pred_capabilities": [
+        "diagnosis"
+      ],
+      "route_correct": false,
+      "capabilities_exact": false,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 1.996,
+      "error": null
+    },
+    {
+      "id": "main_0203",
+      "kind": "clarify_vague",
+      "source": "template",
+      "query": "有个事想请教",
+      "has_history": false,
+      "gold_route": "clarify",
+      "pred_route": "clarify",
+      "gold_capabilities": [],
+      "pred_capabilities": [],
+      "route_correct": true,
+      "capabilities_exact": true,
+      "confidence": 0.8,
+      "used_fallback": false,
+      "latency_s": 0.609,
+      "error": null
+    }
+  ]
+}
