@@ -182,6 +182,24 @@ def test_last_tasks_records_task_status_for_each_subagent():
     print("测试通过：run()结束后，三个子Agent的Task状态都正确记录为completed")
 
 
+def test_last_tasks_preserve_structured_subagent_evidence():
+    agent = _make_agent_with_fakes(
+        diagnosis_run=lambda crop, symptom: "诊断摘要",
+        weather_run=lambda city: "天气摘要未重复城市名",
+        policy_run=lambda crop, region, need: "政策摘要",
+        final_run=lambda prompt: prompt,
+    )
+    agent.diagnosis_agent.last_evidence = [{"causes": ["稻瘟病"]}]
+    agent.weather_agent.last_evidence = {"city": "长沙", "weather_data": "小雨"}
+    agent.policy_agent.last_evidence = [{"title": "耕地地力保护补贴"}]
+
+    agent.run(crop="水稻", city="长沙", region="湖南省", symptom_text="褐色梭形斑")
+
+    assert agent.last_tasks["diagnosis"].evidence[0]["causes"] == ["稻瘟病"]
+    assert agent.last_tasks["weather"].evidence["city"] == "长沙"
+    assert agent.last_tasks["policy"].evidence[0]["title"] == "耕地地力保护补贴"
+
+
 def test_last_tasks_marks_failed_subagent_with_error_message():
     def failing_weather(city):
         raise RuntimeError("模拟网络超时")

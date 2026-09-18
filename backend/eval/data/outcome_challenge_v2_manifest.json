@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "tasks": 120,
+  "turns": 204,
+  "construction": "7种能力组合×4种交互状态×4种表达风格，加8项边界场景；事实来自仓库知识/政策和冻结天气，问题为独立合成改写，不代表线上流量",
+  "primary_scoring": "最终上下文、业务能力执行、可核验证据与非错误输出；内部route仅记录不计主成功",
+  "categories": {
+    "boundary_no_action": 8,
+    "diagnosis": 16,
+    "diagnosis_policy": 16,
+    "diagnosis_weather": 16,
+    "diagnosis_weather_policy": 16,
+    "policy": 16,
+    "weather": 16,
+    "weather_policy": 16
+  },
+  "interactions": {
+    "carryover": 28,
+    "complete": 28,
+    "correction": 28,
+    "missing": 28,
+    "single_turn": 8
+  },
+  "styles": {
+    "colloquial": 28,
+    "handwritten": 8,
+    "implicit": 28,
+    "noisy": 28,
+    "standard": 28
+  },
+  "sha256": "ba461e030de2232cf34283267b449b04e224ad15755bac5197b742ed6434e1e0"
+}

@@ -156,22 +156,68 @@ _CAPABILITY_TOOL_NAMES = {
 }
 
 _EXPLICIT_CAPABILITY_KEYWORDS = {
-    "diagnosis": ("症状", "病害", "虫害", "发黄", "斑点", "卷叶", "枯萎"),
+    "diagnosis": (
+        "症状", "病害", "虫害", "发黄", "黄叶", "斑点", "病斑", "褐斑", "黑斑",
+        "卷叶", "卷成", "枯萎", "霉", "腐", "蛀", "虫粪", "粉末", "粉层",
+        "皱", "矮", "叶背", "咬出", "怎么处理", "先怎么处理",
+    ),
     "weather": ("天气", "气温", "下雨", "降雨", "打药", "灌溉", "收割"),
     "policy": ("政策", "补贴", "扶持", "申请条件"),
 }
 
-# 只覆盖项目演示中反复使用、归属没有歧义的城市；其他地点仍由结构化路由提取。
+# 只覆盖归属没有歧义、评测和演示会使用的城市；其他地点仍由结构化路由提取。
 _HIGH_CONFIDENCE_CITY_REGIONS = {
     "南京": "江苏省",
     "扬州": "江苏省",
     "长沙": "湖南省",
+    "广州": "广东省",
+    "成都": "四川省",
+    "武汉": "湖北省",
+    "郑州": "河南省",
+    "济南": "山东省",
+    "青岛": "山东省",
+    "合肥": "安徽省",
+    "南昌": "江西省",
+    "西安": "陕西省",
+    "昆明": "云南省",
+    "哈尔滨": "黑龙江省",
+    "沈阳": "辽宁省",
+    "福州": "福建省",
+    "贵阳": "贵州省",
+    "太原": "山西省",
+    "兰州": "甘肃省",
+    "长春": "吉林省",
+    "南宁": "广西壮族自治区",
+    "呼和浩特": "内蒙古自治区",
+    "乌鲁木齐": "新疆维吾尔自治区",
 }
 
 _PROVINCE_ONLY_NAMES = {
     "河北", "山西", "辽宁", "吉林", "黑龙江", "江苏", "浙江", "安徽", "福建",
     "江西", "山东", "河南", "湖北", "湖南", "广东", "海南", "四川", "贵州",
     "云南", "陕西", "甘肃", "青海", "台湾", "内蒙古", "广西", "西藏", "宁夏", "新疆",
+}
+
+_CROP_ALIASES = {
+    "水稻": ("水稻", "稻田", "稻株"),
+    "小麦": ("小麦", "麦子", "麦田"),
+    "玉米": ("玉米", "苞米"),
+    "大豆": ("大豆", "黄豆"),
+    "番茄": ("番茄", "西红柿"),
+    "黄瓜": ("黄瓜",),
+    "白菜": ("白菜",),
+    "辣椒": ("辣椒",),
+    "茄子": ("茄子",),
+    "柑橘": ("柑橘", "橘子"),
+    "葡萄": ("葡萄",),
+    "花生": ("花生",),
+    "马铃薯": ("马铃薯", "土豆"),
+    "苹果": ("苹果",),
+    "茶叶": ("茶叶", "茶树"),
+    "甘蔗": ("甘蔗",),
+    "蔬菜": ("蔬菜",),
+    "油菜": ("油菜",),
+    "棉花": ("棉花",),
 }
 
 _GROWTH_STAGE_PATTERNS = (
@@ -340,6 +386,40 @@ class AgriGraphAgent:
                 "必须采取的措施", "必须要采取的措施", "最近要做", "接下来怎么做", "具体怎么做", "还有什么建议",
             )
         )
+
+    @staticmethod
+    def _is_placeholder_slot_value(field_name: str, value: str) -> bool:
+        """过滤模型从占位表达中“提取”出的伪槽位。
+
+        用户说“当地”“我这里”“地里的作物”时，信息其实仍然缺失。若把这些
+        文本写入会话状态，后续必填校验会被绕过，工具还可能带着无效地点执行。
+        """
+        compact = value.strip().replace(" ", "")
+        placeholders = {
+            "crop": {"作物", "农作物", "地里的作物", "庄稼", "植物"},
+            "city": {"当地", "这里", "本地", "我这里", "所在城市", "城市"},
+            "region": {"当地", "这里", "本地", "所在地区", "当地地区", "地区", "省份"},
+        }
+        return compact in placeholders.get(field_name, set())
+
+    @staticmethod
+    def _crop_is_explicit_in_text(crop: str, text: str) -> bool:
+        """必填作物只能来自用户明确表达，不能由症状反向猜测。"""
+        mentions = _CROP_ALIASES.get(crop, (crop,))
+        return any(mention in text for mention in mentions)
+
+    @staticmethod
+    def _infer_explicit_crop(text: str) -> Optional[str]:
+        matches = [
+            crop
+            for crop, mentions in _CROP_ALIASES.items()
+            if any(mention in text for mention in mentions)
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    @staticmethod
+    def _is_value_correction(text: str) -> bool:
+        return any(marker in text for marker in ("说错了", "正确的是", "更正", "改成"))
 
     @staticmethod
     def _repair_route_payload(payload: dict) -> dict:
@@ -526,11 +606,21 @@ class AgriGraphAgent:
             value = getattr(decision, field_name, None)
             if isinstance(value, str) and value.strip():
                 value = value.strip()
+                if self._is_placeholder_slot_value(field_name, value):
+                    continue
+                if field_name == "crop" and not self._crop_is_explicit_in_text(value, latest_user_text):
+                    continue
                 if field_name == "city" and self._is_province_only(value):
                     continue
                 if field_name == "need" and "policy" not in decision.capabilities:
                     continue
                 updates[field_name] = value
+
+        # 路由模型偶尔返回空工具调用，兜底决策不会抽取槽位。用户明确说出的作物
+        # 仍应确定性写入状态；症状反向猜作物则继续被上面的显式校验拒绝。
+        explicit_crop = self._infer_explicit_crop(latest_user_text)
+        if explicit_crop:
+            updates.setdefault("crop", explicit_crop)
 
         location_city, location_region = self._infer_high_confidence_location(
             latest_user_text,
@@ -591,7 +681,14 @@ class AgriGraphAgent:
             capabilities = list(state["capabilities"])
             route = "planning" if len(capabilities) >= 2 else "react"
 
-        if self._should_answer_from_context(state) and not explicit_capabilities:
+        # “请继续处理刚才的问题”既可能是普通追问，也可能是对缺参追问的正式
+        # 回答。后者必须优先恢复待办任务，不能再被“刚才”关键词覆盖成direct。
+        if (
+            self._should_answer_from_context(state)
+            and not explicit_capabilities
+            and not resumed_pending_request
+            and not self._is_value_correction(latest_user_text)
+        ):
             route = "direct"
             capabilities = []
             confidence = max(confidence, 0.8)
@@ -655,11 +752,16 @@ class AgriGraphAgent:
 
         if vague_request and route == "clarify":
             missing_fields = ["request"]
-        elif route == "clarify" and not missing_fields:
-            allowed = set(_SLOT_LABELS)
-            missing_fields = [name for name in decision.missing_fields if name in allowed] or ["request"]
         elif missing_fields:
             route = "clarify"
+        elif capabilities:
+            # 能力和它真正必需的槽位都已经齐全时执行任务。路由模型偶尔仍会
+            # 输出clarify或附带非必需字段，不能因此制造无意义追问。
+            if route == "clarify":
+                route = "planning" if len(capabilities) >= 2 else "react"
+        elif route == "clarify":
+            allowed = set(_SLOT_LABELS)
+            missing_fields = [name for name in decision.missing_fields if name in allowed] or ["request"]
         elif confidence < self.MIN_ROUTE_CONFIDENCE:
             route = "clarify"
             missing_fields = ["request"]
@@ -724,9 +826,19 @@ class AgriGraphAgent:
                 model = self.llm.bind_tools(TOOLS, tool_choice=tool_name)
 
         response = model.invoke(self._model_messages(state))
-        if rounds == 0 and len(capabilities) == 1 and not getattr(response, "tool_calls", None):
+        expected_tool_name = (
+            _CAPABILITY_TOOL_NAMES.get(capabilities[0])
+            if rounds == 0 and len(capabilities) == 1
+            else None
+        )
+        actual_tool_names = {
+            call.get("name") or (call.get("function") or {}).get("name")
+            for call in (getattr(response, "tool_calls", None) or [])
+            if isinstance(call, dict)
+        }
+        if expected_tool_name and expected_tool_name not in actual_tool_names:
             capability = capabilities[0]
-            tool_name = _CAPABILITY_TOOL_NAMES.get(capability)
+            tool_name = expected_tool_name
             tool_args = {
                 "diagnosis": {
                     "crop": state.get("crop"),

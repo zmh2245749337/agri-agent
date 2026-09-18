@@ -14,11 +14,13 @@ class PolicySubsidyAgent:
     def __init__(self, llm=None):
         self.llm = llm or MyLLM()
         self.agent = MyAgent("PolicySubsidyAgent", self.llm)
+        self.last_evidence = []
 
     def run(self, crop: str, region: str, need: str) -> str:
         matched = match_policy(crop, region, need)
 
         if matched:
+            self.last_evidence = matched
             # 本地库有相关度足够高的结果，走本地知识库这条路——优点是可解释
             # （能说清楚为什么匹配上）、零延迟、零调用成本，优先用这条路
             lines = []
@@ -36,6 +38,7 @@ class PolicySubsidyAgent:
             # 也可能是MIN_SCORE把所有候选都过滤掉了。这种情况不再是简单地告诉
             # 用户"查不到"，而是兜底转向联网实时搜索，尽量还是给出有效信息
             web_results = web_search(f"{region} {crop} {need} 2026年 政策")
+            self.last_evidence = web_results
             if not web_results:
                 policy_text = "本地政策库和联网搜索均未查到相关信息，请如实告知用户暂时查不到，不要编造内容。"
                 source_note = ""

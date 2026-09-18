@@ -5,7 +5,7 @@
 """
 
 from dataclasses import dataclass, field
-from typing import Callable
+from typing import Any, Callable
 from uuid import uuid4
 
 
@@ -17,6 +17,9 @@ class SubAgentTask:
     task_id: str = field(default_factory=lambda: str(uuid4()))
     status: str = "submitted"
     result_text: str = ""
+    # 子Agent生成自然语言时可能省略城市名、政策链接等原始字段。保留结构化
+    # 证据，既用于调试/评测，也让上层能够追溯回答依据。
+    evidence: Any = None
     error: str | None = None
     fallback_reason: str | None = None
 

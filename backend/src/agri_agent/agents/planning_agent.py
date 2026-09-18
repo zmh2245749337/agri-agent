@@ -140,6 +140,18 @@ class PlanningAgent:
             # future.result()继续向外扩散。
             tasks = {key: future.result() for key, future in futures.items()}
 
+        # 自然语言摘要会有损压缩原始字段；把每个子Agent最近一次使用的证据挂到
+        # 统一任务对象上，供上层追踪来源，而不是要求摘要机械重复城市名或链接。
+        evidence_sources = {
+            "diagnosis": self.diagnosis_agent,
+            "weather": self.weather_agent,
+            "policy": self.policy_agent,
+        }
+        for name, task in tasks.items():
+            source = evidence_sources.get(name)
+            if source is not None and task.succeeded:
+                task.evidence = getattr(source, "last_evidence", None)
+
         self.last_tasks = tasks
         elapsed = time.time() - start_time
         print(f"[PlanningAgent] {len(tasks)}个子模块并发执行完成，耗时{elapsed:.1f}秒")

@@ -393,6 +393,204 @@ def test_missing_slot_is_clarified_and_completed_on_next_turn():
     print("测试通过：缺字段时先追问，下一轮补充后沿用之前槽位继续执行")
 
 
+def test_missing_slot_resume_is_not_overridden_by_previous_question_phrase():
+    router = _ScriptedRouter([
+        RouteDecision(
+            route="react",
+            capabilities=["diagnosis"],
+            symptom="叶片发黄",
+            confidence=0.95,
+        ),
+        RouteDecision(
+            route="direct",
+            crop="水稻",
+            confidence=0.95,
+        ),
+    ])
+    llm = _ScriptedLLM([
+        AIMessage(content="触发运行时工具保护。"),
+        AIMessage(content="水稻诊断完成。"),
+    ])
+    with patch(
+        "agri_agent.tools.agent_tools.match_pest_knowledge",
+        return_value=[{"causes": ["可能积水"], "recommendations": ["及时排水"]}],
+    ):
+        agent = _make_agent(router, llm)
+        first_answer = agent.run("叶片最近发黄", thread_id="resume-phrase-thread")
+        second_answer = agent.run(
+            "补充一下，作物是水稻，请继续处理刚才的问题。",
+            thread_id="resume-phrase-thread",
+        )
+        snapshot = agent.get_snapshot("resume-phrase-thread")
+
+    assert "作物" in first_answer
+    assert second_answer == "水稻诊断完成。"
+    assert snapshot["route"] == "react"
+    assert snapshot["capabilities"] == ["diagnosis"]
+
+
+def test_complete_required_fields_override_unnecessary_clarify_decision():
+    router = _ScriptedRouter([
+        RouteDecision(
+            route="clarify",
+            capabilities=["diagnosis"],
+            crop="水稻",
+            symptom="叶片出现褐色梭形病斑",
+            missing_fields=["request"],
+            confidence=0.8,
+        ),
+    ])
+    llm = _ScriptedLLM([
+        AIMessage(content="触发运行时工具保护。"),
+        AIMessage(content="已根据诊断知识给出建议。"),
+    ])
+    with patch(
+        "agri_agent.tools.agent_tools.match_pest_knowledge",
+        return_value=[{"causes": ["稻瘟病"], "recommendations": ["及时处理"]}],
+    ):
+        agent = _make_agent(router, llm)
+        answer = agent.run("水稻叶片出现褐色梭形病斑", thread_id="no-overclarify-thread")
+        snapshot = agent.get_snapshot("no-overclarify-thread")
+
+    assert answer == "已根据诊断知识给出建议。"
+    assert snapshot["route"] == "react"
+    assert snapshot["missing_fields"] == []
+
+
+def test_placeholder_location_does_not_satisfy_required_region():
+    router = _ScriptedRouter([
+        RouteDecision(
+            route="react",
+            capabilities=["policy"],
+            crop="大豆",
+            region="当地",
+            need="农机报废更新补贴",
+            confidence=0.95,
+        ),
+    ])
+    agent = _make_agent(router)
+
+    answer = agent.run(
+        "我在当地种大豆，想确认农机报废更新补贴。",
+        thread_id="placeholder-region-thread",
+    )
+    snapshot = agent.get_snapshot("placeholder-region-thread")
+
+    assert "省级行政区" in answer
+    assert snapshot["route"] == "clarify"
+    assert snapshot["missing_fields"] == ["region"]
+    assert "region" not in snapshot["context"]
+
+
+def test_inferred_crop_does_not_bypass_required_crop_clarification():
+    router = _ScriptedRouter([
+        RouteDecision(
+            route="react",
+            capabilities=["diagnosis"],
+            crop="小麦",
+            symptom="叶片上有橙黄色粉末",
+            confidence=0.95,
+        ),
+    ])
+    agent = _make_agent(router)
+
+    answer = agent.run(
+        "地里的作物叶片上有橙黄色粉末，应该先怎么处理？",
+        thread_id="no-inferred-crop-thread",
+    )
+    snapshot = agent.get_snapshot("no-inferred-crop-thread")
+
+    assert "作物" in answer
+    assert snapshot["route"] == "clarify"
+    assert snapshot["missing_fields"] == ["crop"]
+    assert "crop" not in snapshot["context"]
+
+
+def test_explicit_crop_and_city_survive_empty_router_fallback():
+    router = _ScriptedRouter([None, None, None, None, None, None])
+    llm = _ScriptedLLM([
+        AIMessage(content="已记录作物。"),
+        AIMessage(content="已记录城市。"),
+    ])
+    agent = _make_agent(router, llm)
+
+    agent.run("先记一下：作物是茄子。", thread_id="fallback-crop-thread")
+    crop_snapshot = agent.get_snapshot("fallback-crop-thread")
+    agent.run("先记一下：城市是广州。", thread_id="fallback-city-thread")
+    city_snapshot = agent.get_snapshot("fallback-city-thread")
+
+    assert crop_snapshot["context"]["crop"] == "茄子"
+    assert city_snapshot["context"]["city"] == "广州"
+    assert city_snapshot["context"]["region"] == "广东省"
+
+
+def test_correction_with_previous_phrase_still_executes_current_diagnosis():
+    router = _ScriptedRouter([
+        RouteDecision(route="direct", crop="玉米", confidence=0.95),
+        RouteDecision(
+            route="direct",
+            crop="大豆",
+            symptom="新叶颜色深浅相间并皱缩，植株矮小",
+            confidence=0.95,
+        ),
+    ])
+    llm = _ScriptedLLM([
+        AIMessage(content="已记录作物。"),
+        AIMessage(content="触发运行时工具保护。"),
+        AIMessage(content="诊断为大豆花叶病毒病。"),
+    ])
+    with patch(
+        "agri_agent.tools.agent_tools.match_pest_knowledge",
+        return_value=[{"causes": ["大豆花叶病毒病"], "recommendations": ["防治蚜虫"]}],
+    ):
+        agent = _make_agent(router, llm)
+        agent.run("先记一下：作物是玉米。", thread_id="correction-exec-thread")
+        answer = agent.run(
+            "刚才的作物说错了，正确的是大豆。新叶颜色深浅相间并皱巴，整株长不高，应该先怎么处理？",
+            thread_id="correction-exec-thread",
+        )
+        snapshot = agent.get_snapshot("correction-exec-thread")
+
+    assert answer == "诊断为大豆花叶病毒病。"
+    assert snapshot["route"] == "react"
+    assert snapshot["context"]["crop"] == "大豆"
+
+
+def test_react_guard_replaces_wrong_provider_tool_with_expected_tool():
+    router = _ScriptedRouter([
+        RouteDecision(
+            route="react",
+            capabilities=["diagnosis"],
+            crop="水稻",
+            symptom="叶片发黄",
+            confidence=0.95,
+        ),
+    ])
+    llm = _ScriptedLLM([
+        AIMessage(content="", tool_calls=[{
+            "name": "get_weather_forecast",
+            "args": {"city": "长沙"},
+            "id": "wrong-tool-call",
+        }]),
+        AIMessage(content="已使用诊断知识库。"),
+    ])
+    with patch(
+        "agri_agent.tools.agent_tools.match_pest_knowledge",
+        return_value=[{"causes": ["纹枯病"], "recommendations": ["检查排水"]}],
+    ):
+        agent = _make_agent(router, llm)
+        answer = agent.run("水稻叶片发黄怎么办", thread_id="wrong-tool-guard-thread")
+
+    history = agent.get_history("wrong-tool-guard-thread")
+    tool_names = [
+        call["function"]["name"]
+        for message in history
+        for call in message.get("tool_calls", [])
+    ]
+    assert answer == "已使用诊断知识库。"
+    assert tool_names == ["diagnose_crop_disease"]
+
+
 def test_react_route_executes_tool_and_preserves_frontend_trace():
     router = _ScriptedRouter([
         RouteDecision(

@@ -2,6 +2,14 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+.venv/
 .venv-a2a/
 .venv-langgraph/
 backend/eval/results/*.partial.json
+backend/eval/results/*smoke*
+backend/eval/results/*after_fix*
+backend/eval/results/*diagnosis_guard*
+backend/eval/results/outcome_agent_report_v2.md
+backend/eval/results/outcome_agent_v2.json
+backend/eval/results/outcome_agent_report_v2_final2.md
+backend/eval/results/outcome_agent_v2_final2.json

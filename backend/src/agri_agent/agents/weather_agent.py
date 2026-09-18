@@ -31,9 +31,11 @@ class WeatherAgent:
     def __init__(self, llm=None):
         self.llm = llm or MyLLM()
         self.agent = MyAgent("WeatherAgent", self.llm)
+        self.last_evidence = None
 
     def run(self, city: str) -> str:
         weather_data = asyncio.run(query_weather(city))
+        self.last_evidence = {"city": city, "weather_data": weather_data}
         prompt = f"""你是一个农事天气顾问。今天是{date.today().isoformat()}。根据下面的天气预报数据，
 判断未来几天是否适合打农药、灌溉、收割等农事操作，给出简洁的建议（3句话以内）。
 只使用今天及之后的预报；如果数据里含有更早日期，不要把已经过去的日期写成未来安排：

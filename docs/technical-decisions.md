@@ -16,7 +16,7 @@ AgriAgent 的目标是验证一个端到端农业 Agent 系统：能理解自然
 | Agent编排 | AgriGraph混合Direct/ReAct/Planning/Clarify | 两套平级入口或所有请求动态规划 | 在一张图中混合确定性与动态行为，表单只是强制planning模式 |
 | 政策匹配 | BM25 + 地区过滤 + BGE 精排 | 只用关键词或直接上向量库 | 同时兼顾召回、语义与地区约束；28 条数据无需向量数据库 |
 | 病虫害匹配 | RapidFuzz 主查 + 长上下文对照 | GraphRAG | 77 条数据规模小，图构建成本与收益不匹配 |
-| Agent 间协作 | 进程内 A2A-lite | 完整 A2A JSON-RPC/HTTP | 当前只有 3 个同进程子 Agent，先落能力名片与任务状态机 |
+| Agent 间协作 | 诊断/天气进程内并发；政策可选官方 A2A 跨服务调用 | 三个子 Agent 全部服务化 | 对政策链路做真实协议验证，同时避免过度服务化；远程失败可本地回退 |
 | 图片处理 | 视觉模型转文字，再进入文本 Agent | 视觉模型直接负责诊断和工具调用 | 免费视觉模型不支持 Function Calling，拆分后职责更清晰 |
 | LangGraph | 只保留统一 AgriGraph 主流程 | 在运行代码中维护多版 Agent | State与条件边统一槽位、追问、工具循环和 Planning；历史方案只留在笔记 |
 
@@ -64,11 +64,13 @@ AgriGraph 的 ReAct 节点暴露的是返回结构化数据的底层工具，而
 
 其中，长上下文在 6 条插字改写用例中命中 5 条，RapidFuzz 命中 1 条；但在 2 条作物不匹配用例中，RapidFuzz 全部正确拒绝，长上下文全部误匹配。因此更合理的后续方向是分层兜底，而不是用生成式判断完全替代规则。
 
-## 5. A2A-lite 为什么只做协议核心
+## 5. 为什么只把政策 Agent 接入官方 A2A
 
-`PlanningAgent` 通过 `a2a_lite.py` 调度三个子 Agent。每个 Agent 提供 Agent Card，每次调用创建统一 Task，并经历 `submitted → working → completed/failed` 状态变化。
+`PlanningAgent` 对三个专业分支采用两种执行方式。诊断和天气 Agent 通过线程池在进程内并发执行；政策 Agent 在配置 `POLICY_A2A_URL` 时，通过官方 `a2a-sdk` 先发现远程服务发布的 Agent Card，再用 A2A JSON-RPC 发送 Message、跟踪 Task 状态并读取 Artifact。没有配置远程地址时，政策 Agent 也直接在进程内执行；远程服务不可达或任务失败时，则自动回退本地执行。
 
-这些结构解决了当前项目真正需要的问题：能力声明、统一消息信封、任务生命周期和可观测性。完整 A2A 的服务发现、JSON-RPC 和跨进程传输在当前单进程规模下没有收益，所以被明确留作扩展边界，而不是以“支持 A2A”模糊带过。
+进程内调用和 A2A 远程结果最终都会转换为项目内部的 `SubAgentTask`，统一记录 `submitted → working → completed/failed`、结果、错误、协议类型和回退原因。`SubAgentTask` 只是内部任务结果，不冒充外部协议；早期的 `a2a_lite.py` 已经删除，当前代码不再使用“A2A-lite”这一实现或口径。
+
+只服务化政策 Agent 是有意的边界：这一条链路足以验证官方 A2A 的 Agent Card、JSON-RPC、Message/Task/Artifact 和跨进程传输，同时诊断、天气模块没有独立部署收益，继续进程内并发可减少运维与网络开销。因此项目应描述为“基于官方 SDK 实现政策 Agent 的 A2A 接入”，不能扩大成“三个子 Agent 全部 A2A 化”或“从零实现完整 A2A 协议栈”。
 
 ## 6. 图片为什么先转文字
 

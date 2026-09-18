@@ -23,6 +23,7 @@ eval/量化对比实验（backend/eval/diagnosis_retrieval_eval.py），而不�
 import json
 import re
 import sys
+from threading import Lock
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
@@ -37,6 +38,8 @@ from agri_agent.core.my_llm import MyLLM
 # 过滤掉，但"能不能先把数组解析出来"和"数组里的值合不合法"应该是两步独立的
 # 判断，不能让后者的问题反过来让前者也失败
 _JSON_ARRAY_PATTERN = re.compile(r"\[[-\d,\s]*\]")
+_RESULT_CACHE: dict[tuple[str, str], list] = {}
+_CACHE_LOCK = Lock()
 
 
 def _build_context_block() -> str:
@@ -79,6 +82,14 @@ def long_context_diagnose(crop: str, symptom_text: str, llm=None) -> list:
     llm参数允许调用方传入共享的MyLLM实例（避免每次调用都新建一个client连接），
     不传就用默认配置新建一个——用法上跟项目里其它Agent的llm参数是同一个习惯。
     """
+    cache_key = (crop.strip(), " ".join(symptom_text.split()))
+    use_cache = llm is None or isinstance(llm, MyLLM)
+    if use_cache:
+        with _CACHE_LOCK:
+            cached = _RESULT_CACHE.get(cache_key)
+        if cached is not None:
+            return [dict(entry) for entry in cached]
+
     llm = llm or MyLLM()
     context_block = _build_context_block()
     prompt = f"""下面是一份农作物病虫害知识库，每条记录的格式是"[编号] 作物=...；症状关键词=...；对应病因=..."：
@@ -101,6 +112,9 @@ def long_context_diagnose(crop: str, symptom_text: str, llm=None) -> list:
     for i in indices:
         if 0 <= i < len(PEST_KNOWLEDGE_BASE):
             matched.append(PEST_KNOWLEDGE_BASE[i])
+    if use_cache:
+        with _CACHE_LOCK:
+            _RESULT_CACHE[cache_key] = [dict(entry) for entry in matched]
     return matched
 
 

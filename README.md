@@ -14,7 +14,7 @@ AgriAgent 以聊天作为唯一用户入口：先用结构化输出识别执行�
 | Agent 范式 | LangGraph 混合工作流：结构化路由 + ReAct + Planning 分支 |
 | 政策检索 | BM25 粗筛 → 地区硬过滤 → BGE 语义精排 → 规则加权解释 |
 | 病虫害诊断 | 77 条知识库，RapidFuzz 主路线 + 长上下文对照路线 |
-| 协作协议 | MCP 双向实践 + 官方 A2A 跨服务任务委派 |
+| 协作协议 | MCP 双向实践；政策 Agent 使用官方 A2A 跨服务任务委派，诊断/天气保持进程内调用 |
 | 工程保障 | 429 重试、工具轮数上限、会话恢复、失败隔离、调用轨迹 |
 | 服务形态 | FastAPI 后端 + Streamlit 前端，HTTP 分离部署 |
 
@@ -31,7 +31,7 @@ AgriAgent 以聊天作为唯一用户入口：先用结构化输出识别执行�
 - **单一 Agent 主线**：运行代码只保留 [`AgriGraphAgent`](backend/src/agri_agent/agents/agri_graph.py)。Function Calling 的工具 schema 集中在 [`agent_tools.py`](backend/src/agri_agent/tools/agent_tools.py)，历史版本的实现取舍保留在开发笔记，不再让生产目录承担多版本对照。
 - **检索方案与数据规模匹配**：政策库使用 BM25 + BGE 两阶段检索并提供匹配理由；77 条病虫害知识库没有强行引入向量数据库或 GraphRAG，而是用低成本 RapidFuzz 与长上下文路线做量化对照。
 - **有实验结果，不只展示 Demo**：16 条人工标注用例中，RapidFuzz 命中率为 69%、平均耗时 0.1ms；长上下文路线命中率为 81%、平均耗时 1058.6ms，但在 2 条“作物不匹配”用例上均未正确拒绝。结果支持“规则主查、长上下文兜底复核”，而不是简单替换。
-- **协议、可靠性和可观测性形成闭环**：消费高德天气 MCP，也把自身工具暴露为 MCP Server；基于官方 A2A SDK 将政策 Agent 独立服务化，支持 Agent Card 发现、JSON-RPC 任务委派与本地回退；前端可查看工具参数与原始结果。
+- **协议、可靠性和可观测性形成闭环**：消费高德天气 MCP，也把自身工具暴露为 MCP Server；仅将政策 Agent 基于官方 A2A SDK 独立服务化，支持 Agent Card 发现、JSON-RPC 任务委派与本地回退；诊断和天气 Agent 继续进程内并发，前端可查看工具参数与原始结果。
 
 更完整的设计依据、被放弃的方案和生产化边界见 [技术决策记录](docs/technical-decisions.md)；真实多轮对话中发现的问题、修复证据和面试讲法见 [AgriGraph事故复盘](docs/agent-routing-incidents.md)。
 
@@ -110,9 +110,21 @@ graph TB
     EXT -.MCP协议.-> MCPS
 ```
 
+### Agent 协作边界
+
+当前项目采用“按收益选择协议”的混合执行方式，不应描述成三个子 Agent 已全部 A2A 化：
+
+| 分支 | 默认方式 | 配置官方 A2A 后 | 失败处理 |
+|---|---|---|---|
+| 作物诊断 | 进程内调用 `CropDiagnosisAgent` | 不变 | 记录为失败任务，不阻断其他分支 |
+| 天气建议 | 进程内调用 `WeatherAgent` | 不变 | 记录为失败任务，不阻断其他分支 |
+| 政策补贴 | 进程内调用 `PolicySubsidyAgent` | 通过 Agent Card 发现政策服务，再用 A2A JSON-RPC 完成 Message/Task/Artifact 交互 | 远程不可达或执行失败时自动回退进程内调用 |
+
+三条分支最终都会转换为内部 `SubAgentTask`，用于统一任务状态、结果拼装和失败隔离。它只是项目内部的数据结构，不是 A2A-lite，也不对外宣称实现了另一套协议。仓库已经删除早期的 `a2a_lite.py`；当前只有政策 Agent 这一条链路使用官方 A2A SDK。
+
 ## 技术栈
 
-**后端**：Python、FastAPI、Pydantic、LangGraph、LangChain Core、OpenAI SDK（对接智谱GLM兼容接口）、官方A2A Python SDK（Agent Card、JSON-RPC、Message/Task/Artifact）、MCP、RapidFuzz、jieba、rank-bm25、sentence-transformers（BGE-small-zh-v1.5）、numpy
+**后端**：Python、FastAPI、Pydantic、LangGraph、LangChain Core、OpenAI SDK（对接智谱GLM兼容接口）、官方A2A Python SDK（用于政策 Agent 的 Agent Card、JSON-RPC、Message/Task/Artifact）、MCP、RapidFuzz、jieba、rank-bm25、sentence-transformers（BGE-small-zh-v1.5）、numpy
 
 **前端**：Streamlit
 
@@ -178,9 +190,9 @@ uvicorn agri_agent.api.main:app --reload
 
 后端默认跑在 `http://127.0.0.1:8000`，可以访问 `/docs` 看自动生成的交互式API文档。
 
-### 4.（推荐）启用政策Agent的官方A2A调用
+### 4.（可选）启用政策Agent的官方A2A调用
 
-不开A2A服务时，`PlanningAgent`会直接调用进程内政策Agent；要验证真正的跨服务协作，打开两个终端。
+这项配置只改变政策分支：不开A2A服务时，`PlanningAgent`会直接调用进程内政策Agent，诊断和天气分支始终保持进程内调用。要验证政策 Agent 的真实跨服务协作，打开两个终端。
 
 终端一启动独立政策Agent服务：
 
@@ -252,6 +264,7 @@ python tests/test_long_context_diagnosis_tool.py    # 长上下文诊断的JSON�
 python tests/test_pest_knowledge_tool.py            # 诊断模块模糊匹配的真实行为（含已知边界的回归测试）
 python tests/test_policy_match_tool.py              # 政策模块两阶段检索的真实行为（含地区硬过滤回归测试）
 python tests/test_e2e_eval.py                       # 端到端数据构造、严格评分与报告汇总
+python tests/test_outcome_eval.py                   # V2结果导向挑战集、证据评分与执行器
 ```
 
 也可以在 `backend` 目录运行完整回归：
@@ -288,6 +301,38 @@ python eval\e2e_agent_eval.py --tag main --resume
 
 两条失败均来自一般农艺问答：一条把轮作问题误判成政策检索，另一条对连作原理进行了不必要的追问。报告保留失败记录，不通过修改标签或剔除样本改善数字。
 
+### V2 结果导向挑战评测
+
+旧版140项保留为自动化回归集；V2不再把内部路由和固定工具顺序当作主标准答案，
+而是检查最终上下文、实际完成的业务能力、知识/政策/天气证据和边界约束：
+
+```powershell
+cd backend
+python eval\build_outcome_eval.py
+python eval\outcome_agent_eval.py --limit 5 --tag v2-smoke
+python eval\outcome_agent_eval.py --tag v2_final --resume
+```
+
+V2挑战集包含 **120项任务、204轮对话**：7种能力组合（3种单能力、3种双能力和三能力组合）
+与4种交互状态、4种表达风格组成112项覆盖矩阵，另加8项不应触发工具的边界场景。
+问题为独立合成改写，事实标准来自本地病虫害知识、政策来源和冻结天气响应；数据文件带有
+SHA-256哈希，便于冻结版本。该评测仍不代表线上用户流量，也不使用LLM-as-Judge评价自由文本建议的农业专业水平。
+
+最终运行结果如下，完整失败样本和逐任务轨迹分别见
+[`outcome_agent_report_v2_final.md`](backend/eval/results/outcome_agent_report_v2_final.md) 与
+[`outcome_agent_v2_final.json`](backend/eval/results/outcome_agent_v2_final.json)：
+
+| 指标 | 结果 |
+|---|---:|
+| 业务结果成功率 | **92.50%** |
+| 最终上下文正确率 | **100.00%** |
+| 所需业务能力完成率 | **100.00%** |
+| 可核验证据通过率 | **92.50%** |
+| 边界场景无误调用率 | **100.00%** |
+| 非错误输出率 | **100.00%** |
+
+业务结果成功要求最终上下文、所需能力、可核验证据、边界约束和非错误输出同时通过。120项任务中9项失败，主要来自诊断或天气结果缺少可核验证据，以及缺参场景提前执行工具；失败任务未从分母中剔除。
+
 ## 实验：诊断模块检索方法量化对比
 
 ```bash
@@ -315,7 +360,7 @@ python eval/diagnosis_retrieval_eval.py
 诚实列出目前明确知道、暂时接受的边界，而不是假装没有：
 
 - 诊断模块的模糊匹配（RapidFuzz）能容忍"换一两个字"的近义表达，但扛不住"插入式改写"（比如"叶子有点黄"相对"叶子发黄"），这是编辑距离算法的固有边界——新加的长上下文直接推理路线理论上能解决这个问题，但代价是每次诊断都要多一次大模型调用，具体准确率提升多少、成本涨多少，见上面的量化对比实验，不是靠感觉判断。
-- A2A当前落地的是政策Agent这一条真实跨服务链路，覆盖Agent Card发现、JSON-RPC消息、Task状态与Artifact结果；暂未实现流式响应、Push Notification、鉴权和多节点部署，因此应描述为“实现A2A接入”，而不是“从零实现完整A2A协议栈”。
+- A2A当前只落地政策Agent这一条真实跨服务链路，覆盖Agent Card发现、JSON-RPC消息、Task状态与Artifact结果；诊断和天气仍为进程内调用，内部`SubAgentTask`也不是A2A-lite。暂未实现流式响应、Push Notification、鉴权和多节点部署，因此应描述为“基于官方SDK实现政策Agent的A2A接入”，而不是“从零实现完整A2A协议栈”或“三个子Agent全部A2A化”。
 - 病虫害知识库目前77条、政策知识库28条，覆盖的是常见作物和主要省份，不是穷尽性覆盖；两个模块都有"本地查不到就兜底"的设计（诊断兜底用大模型通用知识、政策兜底联网搜索），但兜底结果的可信度低于本地人工核实过的数据，代码里会明确标注。
 - 图片上传目前只处理一张，多图场景还没做。
 - 统一AgriGraph仍使用内存`MemorySaver`；服务重启后会在首次请求时用前端保存的历史和结构化上下文恢复单机会话，但这不是多实例共享的持久化方案，也还没有长对话总结与槽位过期策略。

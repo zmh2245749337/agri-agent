@@ -7,15 +7,24 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 from agri_agent.core.my_llm import MyLLM
 from agri_agent.core.my_agent import MyAgent
 from agri_agent.tools.pest_knowledge_tool import match_pest_knowledge
+from agri_agent.tools.semantic_pest_knowledge_tool import semantic_match_pest_knowledge
+from agri_agent.tools.long_context_diagnosis_tool import long_context_diagnose
 
 
 class CropDiagnosisAgent:
     def __init__(self, llm=None):
         self.llm = llm or MyLLM()
         self.agent = MyAgent("CropDiagnosisAgent", self.llm)
+        self.last_evidence = []
 
     def run(self, crop: str, symptom_text: str) -> str:
         matched = match_pest_knowledge(crop, symptom_text)
+        if not matched:
+            matched = semantic_match_pest_knowledge(crop, symptom_text)
+        # 本地字面和向量召回均不够确定时，才使用成本更高的长上下文判断。
+        if not matched:
+            matched = long_context_diagnose(crop, symptom_text, llm=self.llm)
+        self.last_evidence = matched
 
         if not matched:
             knowledge_text = "本地知识库未匹配到相关记录，请基于常识给出通用建议，并提示用户描述更详细的症状。"
